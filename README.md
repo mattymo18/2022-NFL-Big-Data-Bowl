@@ -9,7 +9,7 @@ You'll need to install Docker [Here](https://www.docker.com/).
 
 Once you've downloaded Docker you'll need to build the container. Think of the container as a virtual environment that already has every package you'll need downloaded. To build the environment open a terminal and find the directory this project is in. Then run the following command:
 
-    \> docker build . -t 2022-NFL-BDB-env
+    \\> docker build . -t 2022-NFL-BDB-env
     
 This will likely take some time as many packages need to be downloaded
 
