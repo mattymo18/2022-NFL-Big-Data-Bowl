@@ -1,0 +1,31 @@
+---
+title: "Adjusted Plus-Minus Net Return Yards Gained"
+author: "Matt Johnson"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Abstract
+--------
+
+Introduction
+------------
+
+Methodology
+-----------
+
+Results
+-------
+
+Conclusion & Future Research
+----------------------------
+
+CRediT Authorship Contribution Statement
+----------------------------------------
+
+References
+----------
