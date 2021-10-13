@@ -3,8 +3,6 @@
 
 ## Adjusted Plus-Minus Net Return Yards Gained
 
-#### by Matt Johnson
-
 ### Abstract
 
 ### Introduction
