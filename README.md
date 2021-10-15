@@ -11,13 +11,13 @@ Once you've downloaded Docker you'll need to build the container. Think of the c
 
      docker build . -t 2022-NFL-BDB-env
     
-This will likely take some time as many packages need to be downloaded
+This will likely take some time as many packages need to be downloaded.
 
 After the build is complete, you wil be able to open an rstudio server in a browser inside the container. This Docker container is based on rocker/verse. To run the rstudio server run the following command in the terminal:
 
      docker run -v `pwd`:/home/rstudio -p 8787:8787 -e PASSWORD=mypass -t 2022-NFL-BDB-env
       
-Then in a browser go to *0.0.0.0:8787*. This will bring up an rstudio server to build artifacts, explore data, and continue my work. 
+Then in a browser go to **0.0.0.0:8787**. This will bring up an rstudio server to build artifacts, explore data, and continue my work. 
 
 Username: rstudio \
 Password: mypass
@@ -26,7 +26,7 @@ Password: mypass
 Use Makefile as recipe book for building artifacts found in derived directories. 
 
 ##### Example:
-In local project directory, to build artifact named Analysis.pdf go to the terminal and use the following command:
+In the virtual rstudio environment, to build artifact named Analysis.pdf go to the terminal and use the following command:
 
      make Analysis.pdf
     
