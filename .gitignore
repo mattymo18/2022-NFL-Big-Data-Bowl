@@ -5,3 +5,4 @@
 P1.Rproj
 Source_Data/*.csv
 Scratch.Rmd
+Derived_Data/*.csv
