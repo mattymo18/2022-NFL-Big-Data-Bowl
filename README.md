@@ -32,6 +32,10 @@ In the virtual rstudio environment, to build artifact named Analysis.pdf go to t
     
 Use artifacts before colon as make targets. Dependencies are listed after colon.
 
+### Data
+
+Data can be found [Here](https://www.kaggle.com/c/nfl-big-data-bowl-2022/data).
+
 ### Abstract
 
 ### Introduction
