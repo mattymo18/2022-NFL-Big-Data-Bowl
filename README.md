@@ -17,7 +17,7 @@ After the build is complete, you wil be able to open an rstudio server in a brow
 
      docker run -v `pwd`:/home/rstudio -p 8787:8787 -e PASSWORD=mypass -t 2022-NFL-BDB-env
       
-Then click [Here](http://0.0.0.0:8787/). This will bring up an rstudio server to build artifacts, explore data, and continue my work. 
+Then click [Here](http://0.0.0.0:8787/){:target="_blank"}. This will bring up an rstudio server to build artifacts, explore data, and continue my work. 
 
 Username: rstudio \
 Password: mypass
