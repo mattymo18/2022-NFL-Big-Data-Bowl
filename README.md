@@ -34,7 +34,7 @@ Use artifacts before colon as make targets. Dependencies are listed after colon.
 
 ### Data
 
-Data can be found [Here](https://www.kaggle.com/c/nfl-big-data-bowl-2022/data).
+Data can be found [Here](https://www.kaggle.com/c/nfl-big-data-bowl-2022/data). You'll need to unzip the data and place the files directly into the Source_Data directory. 
 
 ### Abstract
 
