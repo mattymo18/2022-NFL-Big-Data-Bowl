@@ -13,10 +13,13 @@ Analysis.pdf:\
 	
 #################################################
 
-#build genercic artifact called Artifact.csv with 
-#dependencies Data_Source1, Data_source2, and Script.R
-Artifact.csv:\
- Data_Source1.csv\
- Data_Source2.csv\
- Script.R
-	Rscript Script.R
+#build initial cleaned tracking data, this will show who is on the field for each play
+
+Derived_Data/Player.Tracking.csv:\
+ Source_Data/players.csv\
+ Source_Data/tracking2018.csv\
+ Source_Data/tracking2019.csv\
+ Source_data/tracking2020.csv\
+ Tracking.Cleaner.R
+	Rscript Tracking.Cleaner.R
+	
