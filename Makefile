@@ -20,6 +20,6 @@ Derived_Data/Player.Tracking.csv:\
  Source_Data/tracking2018.csv\
  Source_Data/tracking2019.csv\
  Source_data/tracking2020.csv\
- Tracking.Cleaner.R
-	Rscript Tracking.Cleaner.R
+ Scripts/Tracking.Cleaner.R
+	Rscript Scripts/Tracking.Cleaner.R
 	
