@@ -23,3 +23,10 @@ Derived_Data/Player.Tracking.csv:\
  Scripts/Tracking.Cleaner.R
 	Rscript Scripts/Tracking.Cleaner.R
 	
+	
+Derived_Data/Sparse.Matrix.txt:\
+ Source_Data/plays.csv\
+ Derived_Data/Player.Tracking.csv\
+ Source_Data/games.csv\
+ Scripts/Player.Matrix.Cleaner.R
+	Rscript Scripts/Player.Matrix.Cleaner.R
