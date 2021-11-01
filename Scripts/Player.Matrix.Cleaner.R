@@ -57,7 +57,8 @@ players.indx <- tibble(
 player.tracker.temp4$RowIdx <- match(player.tracker.temp4$newId, plays.indx$Play)
 player.tracker.temp4$ColIdx <- match(player.tracker.temp4$nflId, players.indx$Player)
 
-#finally we can use the sparseMatrix function and simply specify where the nonzero entries should be
+#finally we can use the sparseMatrix function and simply specify where the nonzero entries should be 
+#and build the matrix
 
 sparse.mat <- sparseMatrix(
   i = player.tracker.temp4$RowIdx, 
