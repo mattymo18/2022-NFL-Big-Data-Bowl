@@ -2,7 +2,8 @@
 .PHONY: clean
 #cleans entire repository of derived elements
 clean:
-	rm derived_data/*.csv
+	rm Derived_Data/*.csv
+	rm Derived_Data/*.txt
 
 ################################################
 
@@ -23,6 +24,7 @@ Derived_Data/Player.Tracking.csv:\
  Scripts/Tracking.Cleaner.R
 	Rscript Scripts/Tracking.Cleaner.R
 	
+#build sparse matrix of players in each play
 	
 Derived_Data/Sparse.Matrix.txt:\
  Source_Data/plays.csv\
