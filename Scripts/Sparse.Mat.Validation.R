@@ -46,9 +46,10 @@ truth.player.set <- player.indx %>%
 #find columns of test row that are nonzero
 test.row.cols <- test.row[, which(test.row!=0)]
 
+#build testing vector that will yield logical for each play, true if all players in sparse.df are correctly on the field
 y[i] = all(sort(as.numeric(unlist(truth.player.set))) == sort(as.numeric(names(test.row.cols[, -23]))))
 
 }
 
-print("finally randomly check 100 plays to ensure correct players are on the field")
+print("finally, randomly check 100 plays to ensure correct players are on the field")
 all(y)
