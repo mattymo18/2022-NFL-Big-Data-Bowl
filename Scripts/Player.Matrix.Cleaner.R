@@ -57,6 +57,10 @@ players.indx <- tibble(
 player.tracker.temp4$RowIdx <- match(player.tracker.temp4$newId, plays.indx$Play)
 player.tracker.temp4$ColIdx <- match(player.tracker.temp4$nflId, players.indx$Player)
 
+#we need to save player.tracker.temp4 to use later for the nflIds of all the players we need
+
+write.csv(player.tracker.temp4, "Derived_Data/player.index.csv", row.names = F)
+
 #finally we can use the sparseMatrix function and simply specify where the nonzero entries should be 
 #and build the matrix
 
