@@ -7,6 +7,17 @@ clean:
 
 ################################################
 
+#phony target to validate the player Matrix
+.PHONY: validate
+
+validate:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/player.index.csv\
+ Scripts/Sparse.Mat.Validation.R
+	Rscript Scripts/Sparse.Mat.Validation.R
+	
+################################################
+
 #builds final report	
 Analysis.pdf:\
  Analysis.Rmd
@@ -24,8 +35,9 @@ Derived_Data/Player.Tracking.csv:\
  Scripts/Tracking.Cleaner.R
 	Rscript Scripts/Tracking.Cleaner.R
 	
-#build sparse matrix of players in each play
-	
+#build sparse matrix of players in each play and player index with nflIds
+
+Derived_Data/player.index.csv\
 Derived_Data/Sparse.Matrix.txt:\
  Source_Data/plays.csv\
  Derived_Data/Player.Tracking.csv\
