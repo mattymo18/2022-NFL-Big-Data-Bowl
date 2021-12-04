@@ -11,6 +11,8 @@ punts <- plays %>%
   #we also dont want any muffs or fumbles, we only want when he catches it or doesn't try to catch it
   filter(specialTeamsResult == "Return" | specialTeamsResult == "Touchback" | 
            specialTeamsResult == "Fair Catch" | specialTeamsResult == "Downed") %>% 
+  #found a few odd plays that resulted in the team that punted getting the ball back, remove those
+  filter(!is.na(NetYardsGained)) %>% 
   #we found out they recycled playIds so we make a new ID for combined game and play
   unite(newId, c(gameId, playId), remove = F)
 
@@ -34,6 +36,36 @@ for(s in szs){
 
 print("Data Loaded")
 
+#turns out there are a few plays here where the play was not actually downed, it was a fumble, 
+#this is really anoying and basically the data is wrong, I can try to fix it later
+#I'll remove these plays manually
+#lets find them now, these plays do not have tracking data so they should just be comepletely taken out
+
+#now grab just the football
+
+#get the downed plays
+downed.punts <- punts %>% 
+  filter(specialTeamsResult == "Downed") %>% 
+  select(newId, gameId, playId)
+
+football <- df_tracking %>% 
+  filter(displayName == "football") %>% 
+  filter(event == "punt_downed" | event == "out_of_bounds") %>% 
+  unite(newId, c(gameId, playId), remove = F)
+
+#now joing with the plays
+
+downed.football <- left_join(downed.punts, football, by = "newId")
+
+#ok we found 14Nas, plays that were labeled as downed but actually were fumbles or penalties 
+#resulting in the offense remaining on the field
+
+#lets get those
+
+remove.plays <- downed.football %>% 
+  filter(is.na(x)) %>% 
+  select(newId)
+
 #now take all the punt plays so we can filter the tracking data
 punt.playId <- punts$newId
 
@@ -51,8 +83,75 @@ punts.tracking <- df_tracking %>%
   summarize(Name = head(displayName, 1), 
             Side = head(team, 1))
 
+#now remove the plays that have no tracking data
+
+punts.tracking.clean <- anti_join(punts.tracking, remove.plays, by = "newId")
+
 #finally we can write this smaller dataset to disk so we can load it in faster later on
 
-write.csv(punts.tracking, file = "Derived_Data/Player.Tracking.csv", row.names = F)
+write.csv(punts.tracking.clean, file = "Derived_Data/Player.Tracking.csv", row.names = F)
 
 print("Tracking Data Cleaning Complete")
+
+#now that we know who is on the field, we want to clean up the plays a bit to include everythin we need
+
+#from here we want to add the rest of the variables of interest: field position and penalty yards
+
+#we already have net yards gained
+
+#lets try to do field position, first we need to deal with the plays when the ball was downed 
+#we need to use the tracking data for this becasue we have no information about the ball rolling after
+# it hits the ground, so we can use tracking data
+
+#now we can just anti-join it
+
+downed.football1 <- anti_join(downed.football, remove.plays, by = "newId")
+
+#the last play for each will be where the ball ended up
+
+downed.football.final <- downed.football1 %>% 
+  filter(!is.na(x)) %>% 
+  #we need to check the play direction, since we want everything moving left to the right, 
+  #we can switch the plays that go right to left
+  mutate(downed.spot = ifelse(playDirection == "left", 100 - (x - 10), x - 10)) %>% 
+  select(newId, downed.spot)
+
+#ok great, now we can just add that in
+
+punts1 <- left_join(anti_join(punts, remove.plays, by = "newId"), downed.football.final, by = "newId")
+
+#ok, there are a lot of NAs for downed.Spot, but that's fine it shouldn't affect anything
+
+#now we can get the rest of this variable easily
+#we can do it all in one step
+
+punts2 <- punts1 %>%
+  #we can use ifesle to make the yardline number in the right form for wehn we do the subtraction
+  #found the cases where teams punted at the 50, yardline side is NA
+  mutate(kickspot.clean = ifelse(possessionTeam == yardlineSide | is.na(yardlineSide), yardlineNumber, 100 - yardlineNumber)) %>%
+  #now we can add in where the ball ended up
+  mutate(returnspot.clean = ifelse(specialTeamsResult == "Touchback", 75,
+                                   ifelse(specialTeamsResult == "Fair Catch", kickspot.clean + kickLength,
+                                          ifelse(specialTeamsResult == "Return", kickspot.clean + kickLength - kickReturnYardage,
+                                                 #this last one needs to be kickspot.clean + kcikLength then + or - how the ball rolled while the team tried
+                                                 #do down it, this is a little tough
+                                                 ifelse(downed.spot - floor(downed.spot) > .5, ceiling(downed.spot), floor(downed.spot)
+                                                 )
+                                          )
+                                   )
+  )
+  ) %>%
+  #finally take the difference, most of these should be negative
+  mutate(field.pos = kickspot.clean - returnspot.clean)
+
+#ok great, the final thing we want to do is get all the penalty yards
+#for this we need to make sure we code it as negative if the kicking team does it, 
+#that way they will have a positive coeff for contribution towards the penalty
+#turns out they already do this for us, that is nice
+
+punts3 <- punts2 %>% 
+  mutate(penalty.yards.clean = ifelse(is.na(penaltyCodes), 0, penaltyYards))
+
+#now we can write this to a csv so we don't have to do all this in the EDA, we can do a simple join
+
+write.csv(punts3, "Derived_Data/clean.plays.csv", row.names = F)
