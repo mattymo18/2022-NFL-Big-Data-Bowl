@@ -13,8 +13,8 @@ clean:
 validate:\
  Derived_Data/Sparse.Matrix.txt\
  Derived_Data/player.index.csv\
- Scripts/Sparse.Mat.Validation.R
-	Rscript Scripts/Sparse.Mat.Validation.R
+ Scripts/03_Sparse.Mat.Validation.R
+	Rscript Scripts/03_Sparse.Mat.Validation.R
 	
 ################################################
 
@@ -27,13 +27,14 @@ Analysis.pdf:\
 
 #build initial cleaned tracking data, this will show who is on the field for each play
 
+Derived_Data/clean.plays.csv\
 Derived_Data/Player.Tracking.csv:\
- Source_Data/players.csv\
+ Source_Data/plays.csv\
  Source_Data/tracking2018.csv\
  Source_Data/tracking2019.csv\
  Source_data/tracking2020.csv\
- Scripts/Tracking.Cleaner.R
-	Rscript Scripts/Tracking.Cleaner.R
+ Scripts/01_Tracking.Cleaner.R
+	Rscript Scripts/01_Tracking.Cleaner.R
 	
 #build sparse matrix of players in each play and player index with nflIds
 
@@ -42,5 +43,5 @@ Derived_Data/Sparse.Matrix.txt:\
  Source_Data/plays.csv\
  Derived_Data/Player.Tracking.csv\
  Source_Data/games.csv\
- Scripts/Player.Matrix.Cleaner.R
-	Rscript Scripts/Player.Matrix.Cleaner.R
+ Scripts/02_Player.Matrix.Cleaner.R
+	Rscript Scripts/02_Player.Matrix.Cleaner.R
