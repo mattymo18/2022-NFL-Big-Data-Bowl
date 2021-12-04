@@ -29,7 +29,7 @@ Sparse.tib$playId <- unique(player.indx$newId)
 colnames(Sparse.tib) <- c(unique(player.indx$nflId), "playId")
 
 #lets choose 100 random plays and run a loop to make sure the correct players are there
-x <- as.integer(runif(100, 1, 5138))
+x <- as.integer(runif(100, 1, nrow(Sparse.tib)))
 
 #set up vector for results
 y <- vector(length = 100)
