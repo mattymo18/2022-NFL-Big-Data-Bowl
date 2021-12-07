@@ -45,3 +45,17 @@ Derived_Data/Sparse.Matrix.txt:\
  Source_Data/games.csv\
  Scripts/02_Player.Matrix.Cleaner.R
 	Rscript Scripts/02_Player.Matrix.Cleaner.R
+	
+################################################# EDA
+
+EDA_Plots/06_Response_Scatterplot_FP_PY.png\
+EDA_Plots/05_Response_Scatterplot_NYG_PY.png\
+EDA_Plots/04_Response_Scatterplot_NYG_FP.png\
+EDA_Plots/03_Response_Boxplots.png\
+EDA_Plots/02_Sparse_Mat_Vis.png\
+EDA_Plots/01_Response_Histograms.png:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/clean.plays.csv\
+ Derived_Data/player.index.csv\
+ Scripts/04_EDA.R
+	Rscript Scripts/04_EDA.R
