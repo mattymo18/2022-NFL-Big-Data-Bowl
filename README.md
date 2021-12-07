@@ -40,4 +40,20 @@ Data can be found [Here](https://www.kaggle.com/c/nfl-big-data-bowl-2022/data). 
 
 ### Introduction
 
-### Preliminary Figures
+### Preliminary Figures from EDA
+
+Here are the boxplots for the three response variables. As you can see, there are a lot of 0s in the Net Yards Gained and Penalty Yards variables. Net Yards Gained has lots of 0s due to the touchbacks, downed balls, and fair catches. This leads us to believe a zero-inflate poisson model may be well suited for these two variables. From the field position boxplot, we suspect it may be approximately normally distributed. 
+
+![](EDA_Plots/03_Response_Boxplots.png)
+
+Below we can see that are suspicion about the field position was verified. It seems to follow an approximately normal distribution with a mean around -40. 
+
+![](EDA_Plots/01_Response_Histograms.png)
+
+Now we see Net Yards Gained plotted against Field Position. There is a clear positive trend after we disregard the inflated 0s in field position.
+
+![](EDA_Plots/04_Response_Scatterplot_NYG_FP.png)
+
+We attempt to visualize the sparse matrix of players on the field during each punt. It is quite difficult to see because of the shear volume, but we see the players that have played in all three seasons are at the top, and the number of games played drops off as we move down. 
+
+![](EDA_Plots/02_Sparse_Mat_Vis.png)
