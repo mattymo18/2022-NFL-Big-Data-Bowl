@@ -50,7 +50,7 @@ Below we can see that are suspicion about the field position was verified. It se
 
 ![](EDA_Plots/01_Response_Histograms.png)
 
-Now we see Net Yards Gained plotted against Field Position. There is a clear positive trend after we disregard the inflated 0s in field position.
+Now we see Net Yards Gained plotted against Field Position. There is a clear positive trend after we disregard the inflated 0s in net yards gained.
 
 ![](EDA_Plots/04_Response_Scatterplot_NYG_FP.png)
 
