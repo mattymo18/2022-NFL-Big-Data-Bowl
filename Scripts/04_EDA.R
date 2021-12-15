@@ -5,6 +5,7 @@
 library(tidyverse)
 library(Matrix)
 library(knitr)
+library(kableExtra)
 
 Sparse.Df <- readMM("Derived_Data/Sparse.Matrix.txt")
 
@@ -178,8 +179,8 @@ Prop.table <- rbind(offense.table.clean, defense.table.clean) %>%
   arrange(desc(ProportionPlayed))
 
 #now lets save this table as something we can bring back in later and look nice, we can use kable then save it
-#as an RDS
+#as a png
 
-Prop.table.final <- kable(Prop.table)
-
-saveRDS(Prop.table.final, "EDA_Plots/07_player_prop_played_table.rds")
+kable(Prop.table) %>% 
+  kable_styling(full_width = F) %>%
+  save_kable(file = "EDA_Plots/07_player_prop_played_table.png")

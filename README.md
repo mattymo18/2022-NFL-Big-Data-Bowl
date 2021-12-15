@@ -56,4 +56,4 @@ Now we see Net Yards Gained plotted against Field Position. There is a clear pos
 
 Rather than visualizing the sparse matrix, we attempt to summarize the structure of it. Since the matrix is very large it is difficult to visualize in the typical manner using a heatmap. Our final matrix displays 5116 plays with 1993 unique players. Here we see the top 5 players
 
-![](EDA_Plots/07_player_prop_played_table.rds)
+![](EDA_Plots/07_player_prop_played_table.png)
