@@ -54,6 +54,6 @@ Now we see Net Yards Gained plotted against Field Position. There is a clear pos
 
 ![](EDA_Plots/04_Response_Scatterplot_NYG_FP.png)
 
-We attempt to visualize the sparse matrix of players on the field during each punt. It is quite difficult to see because of the shear volume, but we see the players that have played in all three seasons are at the top, and the number of games played drops off as we move down. 
+Rather than visualizing the sparse matrix, we attempt to summarize the structure of it. Since the matrix is very large it is difficult to visualize in the typical manner using a heatmap. Our final matrix displays 5116 plays with 1993 unique players. Here we see the top 5 players
 
-![](EDA_Plots/02_Sparse_Mat_Vis.png)
+![](EDA_Plots/07_player_prop_played_table.rds)

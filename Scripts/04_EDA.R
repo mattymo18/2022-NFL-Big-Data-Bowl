@@ -4,14 +4,13 @@
 
 library(tidyverse)
 library(Matrix)
+library(knitr)
 
 Sparse.Df <- readMM("Derived_Data/Sparse.Matrix.txt")
 
 punts <- read_csv("Derived_Data/clean.plays.csv")
 
 player.index <- read_csv("Derived_Data/player.index.csv")
-
-# and we can find out punts again easily using the same code as in the cleaning scripts
 
 #first lets attach the unique newIds to the Sparse.Df as it's own column
 
@@ -130,3 +129,57 @@ graph6 <- Sparse.tib.named %>%
   labs(title = "Field Position Vs. Penalty Yards")
 
 ggsave("EDA_Plots/06_Response_Scatterplot_FP_PY.png", plot = graph6)
+
+#lets swich gears a bit here, why don't we try to summaruze our sparse matrix instead of visualizing it, maybe
+#some table wiuld be nicer. 
+
+#first lets take a look at the top 5 players with regard to proportion of total plays played, we can take some
+#simple colmeans and rank them in order, for defense we want the closest to -1 and offense we want 1
+
+#first we can look at the offense
+offense.prop <- head(sort(colMeans(Sparse.tib.named[, 5:ncol(Sparse.tib.named)]), decreasing = T), 5)
+
+#next the defense
+defense.prop <- head(sort(colMeans(Sparse.tib.named[, 5:ncol(Sparse.tib.named)]), decreasing = F), 5)
+
+#now lets make these look like a nice table with the players real names and label for offense/defense
+
+offense.table <- tibble(
+  nflId = as.numeric(names(offense.prop)), 
+  ProportionPlayed = abs(as.numeric(offense.prop)), 
+  Side = rep("Offense", 5)
+)
+
+#and simply join it with the player.index
+
+offense.table.clean <- left_join(offense.table, player.index %>% 
+                                   distinct(nflId, Name), by = "nflId") %>% 
+  select(Name, Side, ProportionPlayed)
+
+#and do the same thing for defense
+
+
+defense.table <- tibble(
+  nflId = as.numeric(names(defense.prop)), 
+  ProportionPlayed = abs(as.numeric(defense.prop)), 
+  Side = rep("Defense", 5)
+)
+
+#and simply join it with the player.index
+
+defense.table.clean <- left_join(defense.table, player.index %>% 
+                                   distinct(nflId, Name), by = "nflId") %>% 
+  select(Name, Side, ProportionPlayed)
+
+
+#and finally we can put them together and reorder by Proportion played
+
+Prop.table <- rbind(offense.table.clean, defense.table.clean) %>% 
+  arrange(desc(ProportionPlayed))
+
+#now lets save this table as something we can bring back in later and look nice, we can use kable then save it
+#as an RDS
+
+Prop.table.final <- kable(Prop.table)
+
+saveRDS(Prop.table.final, "EDA_Plots/07_player_prop_played_table.rds")

@@ -48,6 +48,7 @@ Derived_Data/Sparse.Matrix.txt:\
 	
 ################################################# EDA
 
+EDA_Plots/07_player_prop_played_table.rds\
 EDA_Plots/06_Response_Scatterplot_FP_PY.png\
 EDA_Plots/05_Response_Scatterplot_NYG_PY.png\
 EDA_Plots/04_Response_Scatterplot_NYG_FP.png\
