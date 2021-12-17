@@ -184,3 +184,4 @@ Prop.table <- rbind(offense.table.clean, defense.table.clean) %>%
 kable(Prop.table) %>% 
   kable_styling(full_width = F) %>%
   save_kable(file = "EDA_Plots/07_player_prop_played_table.png")
+
