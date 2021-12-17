@@ -5,3 +5,5 @@ MAINTAINER Matt Johnson <johnson.matt1818#gmail.com>
 RUN R -e "install.packages('Matrix')"
 RUN R -e "install.packages('knitr')"
 RUN R -e "install.packages('kableExtra')"
+RUN R -e "install.packages('ggrepel')"
+

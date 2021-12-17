@@ -40,7 +40,7 @@ Derived_Data/Player.Tracking.csv:\
 
 Derived_Data/player.index.csv\
 Derived_Data/Sparse.Matrix.txt:\
- Source_Data/plays.csv\
+ Derived_Data/clean.plays.csv\
  Derived_Data/Player.Tracking.csv\
  Source_Data/games.csv\
  Scripts/02_Player.Matrix.Cleaner.R
@@ -48,6 +48,7 @@ Derived_Data/Sparse.Matrix.txt:\
 	
 ################################################# EDA
 
+EDA_Plots/08_Player_Avg_Pop_Avg.png\
 EDA_Plots/07_player_prop_played_table.png\
 EDA_Plots/06_Response_Scatterplot_FP_PY.png\
 EDA_Plots/05_Response_Scatterplot_NYG_PY.png\

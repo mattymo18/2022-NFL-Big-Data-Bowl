@@ -6,6 +6,7 @@ library(tidyverse)
 library(Matrix)
 library(knitr)
 library(kableExtra)
+library(ggrepel)
 
 Sparse.Df <- readMM("Derived_Data/Sparse.Matrix.txt")
 
@@ -22,8 +23,7 @@ Sparse.tib <- as.data.frame(as.matrix(Sparse.Df))
 #now we can figure out which column corresponds to which player with the player.index
 
 col.names <- player.index %>%
-    arrange(ColIdx) %>%
-    select(nflId, ColIdx) %>%
+    arrange(ColIdx)  %>%
     distinct(nflId, ColIdx) %>%
     select(nflId)
 
@@ -32,7 +32,7 @@ names(Sparse.tib) <- as.character(unlist(col.names))
 #now we just put in all the variables we need
 
 Sparse.tib.named <- Sparse.tib %>% 
-  mutate(newId = unique(punts$newId)) %>% 
+  mutate(newId = unique(player.index$newId)) %>% 
   mutate(NYG = punts$NetYardsGained) %>% 
   mutate(Field.Pos = punts$field.pos) %>% 
   mutate(Pen.Yrds = punts$penalty.yards.clean) %>% 
@@ -185,3 +185,92 @@ kable(Prop.table) %>%
   kable_styling(full_width = F) %>%
   save_kable(file = "EDA_Plots/07_player_prop_played_table.png")
 
+#lets try to take a look at each players average for the three variables of interest and compare it 
+#to the population average, we can visualize that
+
+
+#first I think I'll need to build a function that will take their absolute value of each players column vector and
+#and multiply it by the corresponding value in the three responses then I want to take an average, simply divide by 
+#sum of the abs value of the col
+
+#lets do three different functions, that should be pretty easy
+
+player.avg.func.FP <- function(x) {
+  avg = abs(x)%*%Sparse.tib.named$Field.Pos/sum(abs(x))
+}
+
+player.avg.func.NYG <- function(x) {
+  avg = abs(x)%*%Sparse.tib.named$NYG/sum(abs(x))
+}
+
+player.avg.func.PY <- function(x) {
+  avg = abs(x)%*%Sparse.tib.named$Pen.Yrds/sum(abs(x))
+}
+
+#now we can do a similar excercise as above to make the tables for each player with their names
+
+response.per.player.avg <- tibble(
+  nflId = as.numeric(names(Sparse.tib.named[, 5:ncol(Sparse.tib.named)])), 
+  FP.AVG = apply(Sparse.tib.named[, 5:ncol(Sparse.tib.named)], 2, player.avg.func.FP), 
+  NYG.AVG = apply(Sparse.tib.named[, 5:ncol(Sparse.tib.named)], 2, player.avg.func.NYG), 
+  PY.AVG = apply(Sparse.tib.named[, 5:ncol(Sparse.tib.named)], 2, player.avg.func.PY)
+)
+
+#now we can simply add in the names and make some plots
+
+response.per.player.avg.named <- left_join(response.per.player.avg, 
+                                           player.index %>% 
+                                             distinct(nflId, Name), 
+                                           by = "nflId") %>% 
+  select(nflId, Name, everything())
+
+
+#now we want to compare these to the population means and visualize it
+
+popmeans <- tibble(
+  Variable = c("Net Yards Gained", "Field Position", "Penalty Yards"), 
+  Value = c(mean(Sparse.tib.named$NYG), mean(Sparse.tib.named$Field.Pos), mean(Sparse.tib.named$Pen.Yrds))
+)
+
+graph7 <- response.per.player.avg.named %>% 
+  rename("Net Yards Gained" = NYG.AVG, 
+         "Field Position" = FP.AVG, 
+         "Penalty Yards" = PY.AVG) %>% 
+  pivot_longer(cols = c(`Net Yards Gained`, `Field Position`, `Penalty Yards`), 
+               names_to = "Variable", values_to = "Value") %>% 
+  select(Variable, Value) %>% 
+  ggplot(aes(x = Value, y = Variable, color = Variable)) +
+  geom_point() +
+  geom_segment(aes(x = mean(Sparse.tib.named$Field.Pos), xend = mean(Sparse.tib.named$Field.Pos), 
+                   y = 0.6, yend = 1.4, ), color = "black") +
+  geom_segment(aes(x = mean(Sparse.tib.named$NYG), xend = mean(Sparse.tib.named$NYG), 
+                   y = 1.6, yend = 2.4, ), color = "black") +
+  geom_segment(aes(x = mean(Sparse.tib.named$Pen.Yrds), xend = mean(Sparse.tib.named$Pen.Yrds), 
+                   y = 2.6, yend = 3.4, ), color = "black") +
+  geom_text_repel(data = response.per.player.avg.named %>%
+                    rename("Value" = FP.AVG) %>%
+                    mutate(Variable = "Field Position") %>% 
+                    filter(Value < mean(Sparse.tib.named$Field.Pos) - 3*sd(Sparse.tib.named$Field.Pos) | 
+                             Value > mean(Sparse.tib.named$Field.Pos) + 3*sd(Sparse.tib.named$Field.Pos)), 
+                  aes(x = Value, label = Name), 
+                  color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
+  geom_text_repel(data = response.per.player.avg.named %>%
+                    rename("Value" = NYG.AVG) %>%
+                    mutate(Variable = "Net Yards Gained") %>% 
+                    filter(Value < mean(Sparse.tib.named$NYG) - 3*sd(Sparse.tib.named$NYG) | 
+                             Value > mean(Sparse.tib.named$NYG) + 3*sd(Sparse.tib.named$NYG)), 
+                  aes(x = Value, label = Name), 
+                  color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
+  geom_text_repel(data = response.per.player.avg.named %>%
+                    rename("Value" = PY.AVG) %>%
+                    mutate(Variable = "Penalty Yards") %>% 
+                    filter(Value < mean(Sparse.tib.named$Pen.Yrds) - 3*sd(Sparse.tib.named$Pen.Yrds) | 
+                             Value > mean(Sparse.tib.named$Pen.Yrds) + 3*sd(Sparse.tib.named$Pen.Yrds)), 
+                  aes(x = Value, label = Name), 
+                  color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Player Averages vs. Population Average", 
+       caption = "*Black lines signify population means per variable")
+
+ggsave("EDA_Plots/08_Player_Avg_Pop_Avg.png", plot = graph7)

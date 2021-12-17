@@ -2,20 +2,11 @@
 library(tidyverse)
 library(Matrix)
 #we can start with the play data, we can take out all the punts here
-plays <- read.csv("Source_Data/plays.csv")
+punts <- read.csv("Derived_Data/clean.plays.csv")
 
 player.tracker <- read_csv("Derived_Data/Player.Tracking.csv")
 
 games <- read_csv("Source_Data/games.csv")
-
-punts <- plays %>% 
-  filter(specialTeamsPlayType == "Punt") %>% 
-  mutate(NetYardsGained = ifelse(specialTeamsResult == "Return", kickReturnYardage, 0)) %>% 
-  #we also dont want any muffs or fumbles, we only want when he catches it or doesn't try to catch it
-  filter(specialTeamsResult == "Return" | specialTeamsResult == "Touchback" | 
-           specialTeamsResult == "Fair Catch" | specialTeamsResult == "Downed") %>% 
-  #make our newId
-  unite(newId, c(gameId, playId), remove = F)
 
 #ok now this is simple, I can just join and mutate
 ############################################# we need to fix starting here, rerun Tracking.Cleaner.R ###############3
