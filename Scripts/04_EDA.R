@@ -233,20 +233,26 @@ popmeans <- tibble(
 )
 
 graph7 <- response.per.player.avg.named %>% 
+  #rename for convenience
   rename("Net Yards Gained" = NYG.AVG, 
          "Field Position" = FP.AVG, 
          "Penalty Yards" = PY.AVG) %>% 
+  #pivot so we can plot nicely
   pivot_longer(cols = c(`Net Yards Gained`, `Field Position`, `Penalty Yards`), 
                names_to = "Variable", values_to = "Value") %>% 
   select(Variable, Value) %>% 
   ggplot(aes(x = Value, y = Variable, color = Variable)) +
+  #we want to start with just points for each in 1dim per variable
   geom_point() +
+  #now we can add in segments for the population averages
   geom_segment(aes(x = mean(Sparse.tib.named$Field.Pos), xend = mean(Sparse.tib.named$Field.Pos), 
                    y = 0.6, yend = 1.4, ), color = "black") +
   geom_segment(aes(x = mean(Sparse.tib.named$NYG), xend = mean(Sparse.tib.named$NYG), 
                    y = 1.6, yend = 2.4, ), color = "black") +
   geom_segment(aes(x = mean(Sparse.tib.named$Pen.Yrds), xend = mean(Sparse.tib.named$Pen.Yrds), 
                    y = 2.6, yend = 3.4, ), color = "black") +
+  #now we want to label a few of the players, but only the ones significantly different than the population avg
+  #lets do 3 standard deviations, 2 labled a lot of players
   geom_text_repel(data = response.per.player.avg.named %>%
                     rename("Value" = FP.AVG) %>%
                     mutate(Variable = "Field Position") %>% 
@@ -268,9 +274,11 @@ graph7 <- response.per.player.avg.named %>%
                              Value > mean(Sparse.tib.named$Pen.Yrds) + 3*sd(Sparse.tib.named$Pen.Yrds)), 
                   aes(x = Value, label = Name), 
                   color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
+  theme(plot.caption.position = "left") +
   coord_flip() +
   theme_bw() +
   labs(title = "Player Averages vs. Population Average", 
-       caption = "*Black lines signify population means per variable")
+       caption = "*Black lines signify population means per variable") +
+  theme(plot.caption = element_text(color = "red", face = "italic", hjust = 1.65))
 
 ggsave("EDA_Plots/08_Player_Avg_Pop_Avg.png", plot = graph7)
