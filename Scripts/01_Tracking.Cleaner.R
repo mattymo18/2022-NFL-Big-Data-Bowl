@@ -10,11 +10,24 @@ punts <- plays %>%
   mutate(NetYardsGained = ifelse(specialTeamsResult == "Return", kickReturnYardage, 0)) %>% 
   #we also dont want any muffs or fumbles, we only want when he catches it or doesn't try to catch it
   filter(specialTeamsResult == "Return" | specialTeamsResult == "Touchback" | 
-           specialTeamsResult == "Fair Catch" | specialTeamsResult == "Downed") %>% 
+           specialTeamsResult == "Fair Catch" | specialTeamsResult == "Downed" |
+           specialTeamsResult == "Out of Bounds") %>% 
   #found a few odd plays that resulted in the team that punted getting the ball back, remove those
   filter(!is.na(NetYardsGained)) %>% 
   #we found out they recycled playIds so we make a new ID for combined game and play
   unite(newId, c(gameId, playId), remove = F)
+
+#After further consideration (thanks kubi), we actually do want fumbles. Fumbles are probably the most important game changin
+#plays that can happen in special teams. Let's starrt brainstorming the situations we need and what should happen for our
+#three response variables so we can keep our player coding the same (1s: offense, -1: defense)
+
+#we can take a look at these plays completely separately, but we want it in the same script to avoid loading in tracking data
+#more than once
+
+# special.plays <- plays %>% 
+#   filter(specialTeamsPlayType == "Punt") %>% 
+#   #don't worry about building any new vars yet, we can do it all at once at the end once we make decisions
+#   filter(specialTeamsResult == "Non-Special Teams Result" | specialTeamsResult == "")
 
 #now we need to iterate through the three seasons to get all the tracking data into one
 szs <- seq(2018, 2020)
@@ -43,15 +56,22 @@ print("Data Loaded")
 
 #now grab just the football
 
-#get the downed plays
+#get the downed plays, we can treat the plays that went out of bounds the exact same as downed punts
 downed.punts <- punts %>% 
-  filter(specialTeamsResult == "Downed") %>% 
+  filter(specialTeamsResult == "Downed" | specialTeamsResult == "Out of Bounds") %>% 
   select(newId, gameId, playId)
 
 football <- df_tracking %>% 
   filter(displayName == "football") %>% 
   filter(event == "punt_downed" | event == "out_of_bounds") %>% 
-  unite(newId, c(gameId, playId), remove = F)
+  unite(newId, c(gameId, playId), remove = F) %>% 
+#it turns out there are a few plays where they coded that the ball went out of bounds and that it was downed...this causes
+#some duplicated newIds which is messing everything up. We need to solve this here. I'm going to try to groupby NewId and 
+#since we aren;t sure about the spot we can just take the avg spot and we need playdirection but it remains the same
+  group_by(newId) %>% 
+  summarize(x = mean(x), 
+            playDirection = head(playDirection, 1))
+  
 
 #now joing with the plays
 

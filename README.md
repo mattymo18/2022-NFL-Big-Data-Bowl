@@ -60,6 +60,6 @@ Below we see the top 5 players on offense and defense for their proportion of ti
 
 ![](EDA_Plots/07_player_prop_played_table.png)
 
-Next, we'll take a look at the difference between individual players averages across the three responses and the population averages. We then label players that are above or below 3 standard deviations away from the population mean. We find two players with very high field position and net yards gained. Adolphus Washington and Gerald Everett were both on the field during a single play that happened to be a major return. We will likely remove these kinds of players with low sample sizes because their contribution cannot be defined by a single play. 
+Next, we'll take a look at the difference between individual player's averages across the three responses while they are on the field and the population averages. We then label players that are above or below 3 standard deviations away from the population mean. We find two players with very high field position and net yards gained. Adolphus Washington and Gerald Everett were both on the field during a single play that happened to be a major return. We will likely remove these kinds of players with low sample sizes because their contribution cannot be defined by a single play. 
 
 ![](EDA_Plots/08_Player_Avg_Pop_Avg.png)

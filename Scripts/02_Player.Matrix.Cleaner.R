@@ -9,7 +9,6 @@ player.tracker <- read_csv("Derived_Data/Player.Tracking.csv")
 games <- read_csv("Source_Data/games.csv")
 
 #ok now this is simple, I can just join and mutate
-############################################# we need to fix starting here, rerun Tracking.Cleaner.R ###############3
 player.tracker.temp1 <- left_join(player.tracker, games, by = "gameId")
 
 #now we can mutate and clean up a bit

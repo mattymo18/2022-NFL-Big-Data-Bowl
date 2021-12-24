@@ -12,7 +12,7 @@ set.seed(18)
 Sparse.df <- readMM("Derived_Data/Sparse.Matrix.txt")
 player.indx <- read_csv("Derived_Data/player.index.csv")
 
-Sparse.tib <- as.tibble(as.matrix(Sparse.df))
+Sparse.tib <- as_tibble(as.matrix(Sparse.df))
 
 #check that all rows add to 0
 print("check that all rows add to 0")
@@ -28,11 +28,11 @@ Sparse.tib$playId <- unique(player.indx$newId)
 
 colnames(Sparse.tib) <- c(unique(player.indx$nflId), "playId")
 
-#lets choose 100 random plays and run a loop to make sure the correct players are there
-x <- as.integer(runif(100, 1, nrow(Sparse.tib)))
+#lets choose 500 random plays and run a loop to make sure the correct players are there
+x <- as.integer(runif(500, 1, nrow(Sparse.tib)))
 
 #set up vector for results
-y <- vector(length = 100)
+y <- vector(length = 500)
 
 for (i in 1:length(x)) {
 #get test row
@@ -51,5 +51,5 @@ y[i] = all(sort(as.numeric(unlist(truth.player.set))) == sort(as.numeric(names(t
 
 }
 
-print("finally, randomly check 100 plays to ensure correct players are on the field")
+print("finally, randomly check 500 plays to ensure correct players are on the field")
 all(y)
