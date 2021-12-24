@@ -54,12 +54,12 @@ Now we see Net Yards Gained plotted against Field Position. There is a clear pos
 
 ![](EDA_Plots/04_Response_Scatterplot_NYG_FP.png)
 
-Rather than visualizing the sparse matrix, we attempt to summarize the structure of it. Since the matrix is very large it is difficult to visualize in the typical manner using a heatmap. Our final matrix displays 5116 plays with 1993 unique players. 
+Rather than visualizing the sparse matrix, we attempt to summarize the structure of it. Since the matrix is very large it is difficult to visualize in the typical manner using a heatmap. Our final matrix displays 5697 plays with 2003 unique players. 
 
 Below we see the top 5 players on offense and defense for their proportion of time on the field for these 5116 plays. It is not surprising to see Andre Roberts, Alex Erickson, Tarik Cohen, and DeAndre Carter on the top 5 as they are all punt return specialists. Similarly on the defensive side, we see 2 punters (Tress Way & Matt Haack) and 3 long snappers (Thomas Hennessy, Nick Sundberg, & Aaron Brewer).
 
 ![](EDA_Plots/07_player_prop_played_table.png)
 
-Next, we'll take a look at the difference between individual player's averages across the three responses while they are on the field and the population averages. We then label players that are above or below 3 standard deviations away from the population mean. We find two players with very high field position and net yards gained. Adolphus Washington and Gerald Everett were both on the field during a single play that happened to be a major return. We will likely remove these kinds of players with low sample sizes because their contribution cannot be defined by a single play. 
+Next, we'll take a look at the difference between individual player's averages across the three responses while they are on the field and the population averages. We then label players that are above or below 3 standard deviations away from the population mean. We find one player with very high field position and net yards gained. Adolphus Washington is only on the field during a single play that happened to be a major return. We will likely remove these kinds of players with low sample sizes because their contribution cannot be defined by a single play. 
 
 ![](EDA_Plots/08_Player_Avg_Pop_Avg.png)
