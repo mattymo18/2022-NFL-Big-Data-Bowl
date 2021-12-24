@@ -282,3 +282,5 @@ graph7 <- response.per.player.avg.named %>%
   theme(plot.caption = element_text(color = "red", face = "italic", hjust = 1.65))
 
 ggsave("EDA_Plots/08_Player_Avg_Pop_Avg.png", plot = graph7)
+
+#I think this could be it for the eda. The only thing i haven't done yet is fumbles, but tbh idk what to do there...
