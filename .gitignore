@@ -7,3 +7,5 @@ Source_Data/*.csv
 Scratch.Rmd
 Derived_Data/*.csv
 Derived_Data/*.txt
+Regression_Plots/*.png
+Rplots.pdf

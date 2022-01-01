@@ -25,6 +25,13 @@ Analysis.pdf:\
 	
 #################################################
 
+#builds data bowl submission
+BDB_Submission.pdf:\
+ BDB_Submission.Rmd
+	R -e "rmarkdown::render('BDB_Submission.Rmd')"
+	
+#################################################
+
 #build initial cleaned tracking data, this will show who is on the field for each play
 
 Derived_Data/clean.plays.csv\
@@ -61,3 +68,12 @@ EDA_Plots/01_Response_Histograms.png:\
  Derived_Data/player.index.csv\
  Scripts/04_EDA.R
 	Rscript Scripts/04_EDA.R
+	
+	################################################# Regression FP
+	
+Regression_Plots/01_Top10.FP.Table.png:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/clean.plays.csv\
+ Derived_Data/player.index.csv\
+ Scripts/05_Field.Pos.Regression.R
+	Rscript Scripts/05_Field.Pos.Regression.R
