@@ -30,7 +30,7 @@ BDB_Submission.pdf:\
  BDB_Submission.Rmd
 	R -e "rmarkdown::render('BDB_Submission.Rmd')"
 	
-#################################################
+################################################# Cleaning
 
 #build initial cleaned tracking data, this will show who is on the field for each play
 
@@ -69,9 +69,12 @@ EDA_Plots/01_Response_Histograms.png:\
  Scripts/04_EDA.R
 	Rscript Scripts/04_EDA.R
 	
-	################################################# Regression FP
+################################################# Regression Field Position
 	
-Regression_Plots/01_Top10.FP.Table.png:\
+Regression_Plots/04_Bot20.FP.Ridge.Table.png\
+Regression_Plots/03_Top20.FP.Ridge.Table.png\
+Regression_Plots/02_Top20.FP.Table.png\
+Regression_Plots/01_Top20.FP.Table.SnapPrblm.png:\
  Derived_Data/Sparse.Matrix.txt\
  Derived_Data/clean.plays.csv\
  Derived_Data/player.index.csv\

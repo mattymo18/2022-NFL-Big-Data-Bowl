@@ -6,4 +6,7 @@ RUN R -e "install.packages('Matrix')"
 RUN R -e "install.packages('knitr')"
 RUN R -e "install.packages('kableExtra')"
 RUN R -e "install.packages('ggrepel')"
+RUN R -e "install.packages('caret')"
+RUN R -e "install.packages('glmnet')"
+
 
