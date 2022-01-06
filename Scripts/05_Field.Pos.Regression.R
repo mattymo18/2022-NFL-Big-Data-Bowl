@@ -6,12 +6,18 @@ library(knitr)
 library(kableExtra)
 library(caret)
 library(glmnet)
+library(reactable)
+library(htmltools)
 
 Sparse.Df <- readMM("Derived_Data/Sparse.Matrix.txt")
 
 punts <- read_csv("Derived_Data/clean.plays.csv")
 
 player.index <- read_csv("Derived_Data/player.index.csv")
+
+#need player data from source too for positions
+player.positions <- read_csv("Source_Data/players.csv") %>% 
+  select(nflId, Position)
 
 #we need to do exactly what we did before in the EDA so we have the nice named data frame
 
@@ -221,6 +227,14 @@ top20.final.ridge <- ordered.final.ridge %>%
   arrange(desc(Contribution)) %>% 
   select(nflId, Name, Contribution, Snaps) %>% 
   head(20)
+
+#now finally I can join with their position
+
+top20.final.ridge.pos <- left_join(top20.final.ridge, player.positions %>% distinct(nflId, Position), by = "nflId")
+
+#now since reactable is insane and I can't save it, we need to save this as derived data
+
+write.csv(top20.final.ridge.pos, "Derived_Data/top20.csv", row.names = F)
 
 #wow this is extremely encouraging. We found some players that are on special teams very often and seemingly do well
 #this time it is not just the punters, we also find players more "behind the scenes" and we also find some star punt returners
