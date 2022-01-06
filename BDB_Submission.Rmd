@@ -50,10 +50,10 @@ Sparse.tib.named <- Sparse.tib %>%
 
 ## Introduction
 
-This paper introduces a new metric for assessing player contribution during a punt called Regularized Adjusted Field Position Contribution (RAFPC). We adapt a metric historically used in basketball called Adjusted Plus-Minus (APM); this metric adjusts the conventional Plus-Minus metric to control for every player on the court during a stint where the same 10 players are on the court. In the NFL punt return case, this is simply the 22 players on the field during a punt. In classic APM for basketball, the variable of interest is the points scored during the stint, this will not work for football as points are rarely scored during punts. Instead, we build a field position metric to represent success during a punt return. Field position is the difference between where the team punted from and where the ball ended up in the resulting return. We believe this encapsulates the success of a punt. This new metric can be used to rank players regardless of their position on how much they positively contribute towards the success of their team in punting situations. The definition of contribution will be discussed later in the methodlogy section, but for now it is a positive number indicating how much that individual helped their team.
+This paper introduces a new metric for assessing player contribution for both offensive and defensive players during a punt called Regularized Adjusted Field Position Contribution (RAFPC). I adapt a metric historically used in basketball called Adjusted Plus-Minus (APM). This metric adjusts the conventional Plus-Minus metric to control for every player on the court during a stint where the same 10 players are on the court. In the NFL punt return case, this is simply the 22 players on the field during a punt. In classic APM for basketball, the variable of interest is the points scored during the stint, this will not work for football as points are rarely scored during punts. Instead, I build a field position metric to represent success during a punt return. Field position is the difference between where the team punted from and where the ball ended up in the resulting return. I think this metric encapsulates the success of a punt in terms of the final field position. This new metric can be used to rank players regardless of their position on how much they positively contribute towards the success of their team in punting situations. The definition of contribution is discussed later in the methodology section, but for now it is a positive number indicating how much that individual helped their team in terms of the resulting field position.
 
 ## Data
-The final dataframe used for analysis had 5697 rows and 2007 columns. Each row is a play where one team successfully punted the ball away to the other team. Each column represents a player that could have been on the field during any punt for which we had tracking data. Each cell corresponding to a player is a 1 if the player's team is receiving the punt, a -1 if the player's team is punting, and a 0 if the player is not on the field. The reason we code the punting team as -1 is so they will still have positive coefficients in the regression analysis. This dataframe is inherently rank deficient and therefore we cannot use standard linear regression, rather we must use a penalized approach so the sample covariance matrix is invertible. The dataframe is rank deficient because if we removed a players column, we would still know whether he was on the field on offense or defense simply using the rest of the columns. According to this, the matrix does not have full rank. 
+The final dataframe used for analysis had 5697 rows and 2007 columns. Each row is a play from 2018-2020 where one team successfully punted the ball away to the other team. Each column represents a player that could have been on the field during any punt for which there is tracking data. Each cell corresponding to a player is a 1 if the player's team is receiving the punt, a -1 if the player's team is punting, and a 0 if the player is not on the field. The reason we code the punting team as -1 is so they will still have positive coefficients in the regression analysis. This dataframe is inherently rank deficient and therefore we cannot use standard linear regression, rather we must use a penalized approach so the sample covariance matrix is invertible. The dataframe is rank deficient because if we removed a players column, we would still know whether he was on the field on offense or defense simply using the rest of the columns. According to this, the matrix does not have full rank. Preliminary data cleaning and EDA can be found on my github [HERE](https://github.com/mattymo18/2022-NFL-Big-Data-Bowl). 
 
 Below is a glimpse of the dataframe. 
 
@@ -64,7 +64,7 @@ kable(Sparse.tib.named[1:10, 1:10]) %>%
 
 #### Exploratory Data Analysis
 
-We completed an exploratory data analysis to help us visualize the dataframe we will use for the modeling section. Below we see a histogram and a boxplot for the response variable: Field Position. We find it is approximately normally distributed with mean -40.
+I complete an exploratory data analysis to help visualize the dataframe used for the modeling section. Below is a histogram and a boxplot for the response variable: Field Position. Field Position seems to be approximately normally distributed with mean -40.
 
 ```{r, echo = F, message = F}
 Sparse.tib.named %>% 
@@ -98,7 +98,7 @@ Sparse.tib.named %>%
 
 #### Variable Construction
 
-To build the Field Position response variable we first had to normalize the field so in every punting situation the endzone behind the punter was the 0 yardline. From left to right the yardline increases from 0 to 100. We then take the difference between where the ball was kicked and where the ball was at the end of the play. Below we use the gg_field function developed by Marschall Furman to visualize this variable. The function documentation can be found [HERE](https://github.com/mlfurman3/gg_field). 
+To build the Field Position response variable I first normalize the field so in every punting situation the endzone behind the punter was the 0 yardline. From left to right the yardline increases from 0 to 100. I then take the difference between where the ball was kicked and where the ball was at the end of the play. Below I use the gg_field function developed by Marschall Furman to visualize this variable. The function documentation can be found [HERE](https://github.com/mlfurman3/gg_field). 
 
 ```{r, include = F}
 ## gg_field function - set up as a list of annotations
@@ -251,7 +251,7 @@ ggplot() +
 
 #### Modeling
 
-We employ a similar methodology as in Dan Rosenbaum's paper about adjusted plus minus in basketball found [HERE](http://www.82games.com/comm30.htm). In order to quantify a player's contribution while controlling for everyone on his team as well as everyone playing against him we use a penalized Ridge regression and use the beta coefficients as our value for "Contribution". We use a penalized regression to combat the rank deficiency of the dataframe described in the **Data** section. Specifically, we want to use a Ridge regression because we do not want to shrink anyone player's coefficient to 0 as we would not be able to rank their contribution. By running this type of regression we are able to evaluate players regardless of their position and assess how much they contributed during the play. 
+I employ a similar methodology as in Dan Rosenbaum's paper about adjusted plus minus in basketball found [HERE](http://www.82games.com/comm30.htm). In order to quantify a player's contribution while controlling for everyone on his team as well as everyone playing against him I use a penalized Ridge regression and use the beta coefficients as the value for "Contribution". I use a penalized regression to combat the rank deficiency of the dataframe described in the **Data** section. Specifically, I want to use a Ridge regression because I do not want to shrink anyone player's coefficient to 0 as I would not be able to rank their contribution. By running this type of regression I am able to evaluate players regardless of their position and assess how much they contribute during the play. 
 
 *A Note on Ridge Regression:* Ridge regression is a form of multiple regression that adds a penalty factor for the $\beta$ estimates. Ridge regression allows for the sample covariance matrix to be non-invertible because of the addition of the penalty parameter. Ridge also shrinks coefficients and controls the trade-off between fit and magnitude of $\beta{}s$. In Ordinary Least Squares Regression, 
 $$\hat\beta = (X^tX)^{-1}X^ty$$ 
@@ -268,7 +268,7 @@ This $\hat\beta_{ridge}$ defines our Contribution variable.
 
 ## Results
 
-Below is the final table showing the top 20 players with regard to positive contribution towards field position (min 50 snaps). We need to adjust the table to account for snap-count as there were a few players only on the field during a single return that happened to result in a big play. It is interesting to see that the model finds a variety of players on offense and defense contributing towards a successful special teams play. We also see the model finds a few specialty return players that have direct contribution to the ball moving downfield. 
+Below is the final table showing the top 20 players with regard to positive contribution towards field position (min 25 snaps). I adjust the table to account for snap-count as there are a few players only on the field during a single return that happened to result in a big play. The percentile metric shows where that player stands with respect to every player regardless of their snap--counts. It is interesting to see that the model finds players on both sides of the ball that usually would not get any credit during the return. It also finds some specialy return players that have a direct impact on the ball moving downfield. 
 
 ```{r, include = F}
 #bring in data
@@ -288,7 +288,7 @@ bar_chart <- function(label, width = "100%", height = "16px", fill = "#00bfc4", 
 #ok this is a great graph, lets save it
 
 reactable1 <- DF %>% 
-  select(nflId, Name, Position, Contribution, Snaps) %>% 
+  select(nflId, Name, Position, Contribution, Snaps, Percentile) %>% 
   reactable(
     columns = list(
       Contribution = colDef(name = "Contribution", align = "left", cell = function(value) {
@@ -309,4 +309,4 @@ reactable1
 
 ## Conclusions
 
-We have successfully developed a new metric to assess any player's contribution during punting plays: RAFPC. This type of metric is extremely useful for on-field decision makers as it can be used to decide which players should be on the field during a punt and it makes it easy to compare across different positions. Also, we can use this metric to rank incoming players during the NFL Draft and help GM's decide who they should choose. Future work should apply this model to other play types. In theory, we should be able to apply this model to any play since the same 22 players are always on the field during a play. Future work should also include analysis on fumbles. A major drawback of this analysis is that we remove fumbles when in reality fumbles on special teams plays are some of the most impactful and can instantly change a game. In conclusion, RAFPC can be a useful metric for ranking players across different positions for their contribution during punt plays with regard to relative field position.
+I have successfully developed a new metric to assess any player's contribution during punting plays: RAFPC. This type of metric is extremely useful for on-field decision makers as it can be used to decide which players should be on the field during a punt and it makes it easy to compare across different positions. Future work should apply this model to other play types. In theory, one should be able to apply this model to any play since the same 22 players are always on the field during a play. Future work should also include analysis on fumbles. This analysis removed fumbles because the Field Position variable could not be calculated when the punting team recovered the ball. This ia a major drawback of this analysis since in reality fumbles on special teams plays are some of the most impactful and can instantly change a game. In conclusion, RAFPC can be a useful metric for ranking players across different positions for their contribution during punt plays with regard to relative field position.

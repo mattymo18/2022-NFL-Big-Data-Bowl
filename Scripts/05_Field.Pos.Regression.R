@@ -8,6 +8,7 @@ library(caret)
 library(glmnet)
 library(reactable)
 library(htmltools)
+library(ggrepel)
 
 Sparse.Df <- readMM("Derived_Data/Sparse.Matrix.txt")
 
@@ -221,11 +222,42 @@ ordered.named.ridge <- left_join(na.omit(orderd.coefs.ridge), player.index %>% d
 
 ordered.final.ridge <- left_join(ordered.named.ridge, player.count, by = "nflId")
 
-top20.final.ridge <- ordered.final.ridge %>% 
-  rename(Snaps = n) %>% 
-  filter(Snaps >= 50) %>% 
+#now I want to know their percentiles since we adjutsed snap counts
+
+ordered.final.ridge.percent <- ordered.final.ridge %>% 
+  filter(Contribution >= 0) %>%
   arrange(desc(Contribution)) %>% 
-  select(nflId, Name, Contribution, Snaps) %>% 
+  mutate(Percentile = case_when(
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .90)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .91)) ~ "10",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .91)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .92)) ~ "9",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .92)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .93)) ~ "8",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .93)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .94)) ~ "7",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .94)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .95)) ~ "6",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .95)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .96)) ~ "5",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .96)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .97)) ~ "4",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .97)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .98)) ~ "3",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .98)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .99)) ~ "2",
+    Contribution >= as.numeric(quantile(ordered.final.ridge$Contribution, probs = .99)) &
+      Contribution <= as.numeric(quantile(ordered.final.ridge$Contribution, probs = 1)) ~ "1",
+    TRUE ~ "10+")) %>% 
+  filter(n >= 25)
+
+#before I make the top 20, lets filter out for 25 snaps and make a nice plot for showing how people stack up to the mean
+
+top20.final.ridge <- ordered.final.ridge.percent %>% 
+  rename(Snaps = n) %>% 
+  filter(Snaps >= 25) %>% 
+  arrange(desc(Contribution)) %>% 
+  select(nflId, Name, Contribution, Snaps, Percentile) %>% 
   head(20)
 
 #now finally I can join with their position
@@ -244,7 +276,7 @@ write.csv(top20.final.ridge.pos, "Derived_Data/top20.csv", row.names = F)
 #and compare them in the same setting
 #this is cool, lets save it as a kable, for the bdb submission maybe i can make a reactable of this as well, I think this is my major find
 
-kable(top20.final.ridge, caption = "Top 20 Ridge Model (> 50 snaps)") %>% 
+kable(top20.final.ridge, caption = "Top 20 Ridge Model (> 25 snaps)") %>% 
   kable_styling(full_width = F) %>%
   save_kable(file = "Regression_Plots/03_Top20.FP.Ridge.Table.png")
 #lets find the worst players too
@@ -256,7 +288,7 @@ bot20.final.ridge <- ordered.final.ridge %>%
   select(nflId, Name, Contribution, Snaps) %>% 
   head(20)
 
-kable(bot20.final.ridge, caption = "Bottom 20 Ridge Model (> 50 snaps)") %>% 
+kable(bot20.final.ridge, caption = "Bottom 20 Ridge Model (> 25 snaps)") %>% 
   kable_styling(full_width = F) %>%
   save_kable(file = "Regression_Plots/04_Bot20.FP.Ridge.Table.png")
 
