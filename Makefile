@@ -26,7 +26,8 @@ Analysis.pdf:\
 #################################################
 
 #builds data bowl submission
-BDB_Submission.pdf:\
+BDB_Submission.html:\
+ Derived_Data/top20.csv\
  BDB_Submission.Rmd
 	R -e "rmarkdown::render('BDB_Submission.Rmd')"
 	
@@ -71,6 +72,7 @@ EDA_Plots/01_Response_Histograms.png:\
 	
 ################################################# Regression Field Position
 	
+Derived_Data/top20.csv\
 Regression_Plots/04_Bot20.FP.Ridge.Table.png\
 Regression_Plots/03_Top20.FP.Ridge.Table.png\
 Regression_Plots/02_Top20.FP.Table.png\
