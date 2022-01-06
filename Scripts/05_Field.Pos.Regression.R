@@ -222,6 +222,23 @@ ordered.named.ridge <- left_join(na.omit(orderd.coefs.ridge), player.index %>% d
 
 ordered.final.ridge <- left_join(ordered.named.ridge, player.count, by = "nflId")
 
+# we can make a nice little boxplot here
+
+Contrib.boxplot <- ordered.final.ridge %>% 
+  rename(Snaps = n) %>% 
+  filter(Snaps >= 25) %>%
+  ggplot(aes(x = "", y = Contribution)) +
+  geom_boxplot(fill='#A4A4A4', color="purple") +
+  geom_jitter(color = "purple", alpha = .2) +
+  #lets use the top 1%
+  geom_text_repel(aes(label = ifelse(Contribution >= 0 & Contribution >= as.numeric(quantile(
+    ordered.final.ridge$Contribution, probs = .9)), Name, ""), 
+    x = 1, y = Contribution), max.overlaps = 10) +
+  theme_bw() +
+  labs(title = "Contribution Boxplot")
+
+ggsave("Regression_Plots/05_Contribution_Boxplot.png", plot = Contrib.boxplot)
+
 #now I want to know their percentiles since we adjutsed snap counts
 
 ordered.final.ridge.percent <- ordered.final.ridge %>% 
