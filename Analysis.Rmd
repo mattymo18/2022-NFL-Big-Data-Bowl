@@ -1,13 +1,25 @@
 ---
-title: "Adjusted Plus-Minus Net Return Yards Gained"
-author: "Matt Johnson"
+title: "NFL Adjusted Plus-Minus Special Teams Models"
+subtitle: "Metrics Assessing Player's EPA and Penalty Contribution During Punts"
+author: |
+  | Consultant: Matt Johnson
+  | Client: NFL Big Data Bowl
+  | Advisors: Dr. Steve Marron, Ph.D. & Dr. Perry Haaland, Ph.D.
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes: \usepackage{setspace}
+ \usepackage{float}
+ \floatplacement{figure}{H}
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
+
+\pagebreak
+
+\doublespacing
 
 Abstract
 --------
@@ -23,9 +35,6 @@ Results
 
 Conclusion & Future Research
 ----------------------------
-
-CRediT Authorship Contribution Statement
-----------------------------------------
 
 References
 ----------
