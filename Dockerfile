@@ -12,5 +12,6 @@ RUN R -e "install.packages('reactable')"
 RUN R -e "install.packages('htmltools')"
 RUN R -e "install.packages('reactablefmtr')"
 RUN R -e "install.packages('nflfastR')"
+RUN R -e "install.packages('nflplotR')"
 
 
