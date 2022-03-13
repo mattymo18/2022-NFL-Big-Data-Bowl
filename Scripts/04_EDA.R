@@ -255,7 +255,7 @@ graph3 <- response.per.player.avg.named %>%
   geom_segment(aes(x = mean(Sparse.tib.named$Pen.Yrds), xend = mean(Sparse.tib.named$Pen.Yrds), 
                    y = 1.6, yend = 2.4, ), color = "black") +
   #now we want to label a few of the players, but only the ones significantly different than the population avg
-  #lets do 2 standard deviations
+  #lets do 2 standard deviations, we can use ggrepel so there are no overlaps
   geom_text_repel(data = response.per.player.avg.named %>%
                     rename("Value" = EPA.AVG) %>%
                     mutate(Variable = "EPA") %>% 
