@@ -8,6 +8,8 @@ player.tracker <- read_csv("Derived_Data/Player.Tracking.csv")
 
 games <- read_csv("Source_Data/games.csv")
 
+players <- read_csv("Source_Data/players.csv")
+
 #ok now this is simple, I can just join and mutate
 player.tracker.temp1 <- left_join(player.tracker, games, by = "gameId")
 
@@ -47,9 +49,13 @@ players.indx <- tibble(
 player.tracker.temp4$RowIdx <- match(player.tracker.temp4$newId, plays.indx$Play)
 player.tracker.temp4$ColIdx <- match(player.tracker.temp4$nflId, players.indx$Player)
 
+#finally lets get all these players positions
+
+player.tracker.final <- left_join(player.tracker.temp4, players %>% select(nflId, Position), by = "nflId")
+
 #we need to save player.tracker.temp4 to use later for the nflIds of all the players we need
 
-write.csv(player.tracker.temp4, "Derived_Data/player.index.csv", row.names = F)
+write.csv(player.tracker.final, "Derived_Data/player.index.csv", row.names = F)
 
 #finally we can use the sparseMatrix function and simply specify where the nonzero entries should be 
 #and build the matrix
