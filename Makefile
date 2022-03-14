@@ -68,3 +68,14 @@ EDA_Plots/01_Response_Histograms.png:\
 	Rscript Scripts/04_EDA.R
 	
 ################################################# Regression Models
+
+######################### EPA Models
+
+Derived_Data/Top.10.Players.csv\
+Regression_Plots/Player_EPA_Contribution.png\
+Regression_Plots/Team_EPA_Contribution.png:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/clean.plays.csv\
+ Derived_Data/player.index.csv\
+ Scripts/05_EPA.Regression.R
+	Rscript Scripts/05_EPA.Regression.R
