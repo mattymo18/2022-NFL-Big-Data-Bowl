@@ -82,7 +82,6 @@ top20_gt <- Top20 %>%
               columns = c(Contribution, Contribution2)) %>% 
   tab_header(
     title = md("**Top 10 & Bottom 10 Player EPA Contribution**"),
-    subtitle = "2018-2020 | Minimum of 25 punt returns in that time"
-  )
+    subtitle = "2018-2020 | Minimum of 25 punt returns in that time")
 
 gtsave(top20_gt, "Regression_Plots/top20_gt.png") 
