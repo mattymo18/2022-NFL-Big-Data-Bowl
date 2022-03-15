@@ -67,12 +67,15 @@ top20_gt <- Top20 %>%
   gt_theme_538(table.width = px(650)) %>%
   cols_align(align = "center") %>%
   cols_label(Team = "", 
-             Name = "Player",
+             Name = "",
              headshot = "",
+             Position = "",
              Snaps = "",
              Snaps2 = "",
              Contribution = "", 
              Contribution2 = "") %>%
+  tab_spanner(label ="Player", 
+              columns = c(Team, Name, headshot, Position)) %>% 
   tab_spanner(label = "Snap Count", 
               columns = c(Snaps, Snaps2)) %>% 
   tab_spanner(label = "EPA Contribution", 
