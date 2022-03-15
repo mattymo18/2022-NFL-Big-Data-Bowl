@@ -207,7 +207,8 @@ players.final2.bot <- left_join(players.final,
 
 #now bind those
 
-players.final3 <- rbind(players.final2.top, players.final2.bot)
+players.final3 <- rbind(players.final2.top, players.final2.bot) %>% 
+  select(nflId, Name, Position, Snaps, Contribution)
 
 #now make the ggplot, we want the same style as the team one, lets split it in half for top and bottom 10
 
@@ -241,3 +242,7 @@ ggsave("Regression_Plots/Player_EPA_Contribution.png", plot = graph2)
 write.csv(players.final3, "Derived_Data/Top.10.Players.csv", row.names = F)
 
 #this should conclude my EPA regression work, lets move on to penalty yards Wednesday
+
+#lets see if we can make this gt table, turns out we need to do this in a different script?
+#we don't but it makes it way easier if we do, so lets just do that
+
