@@ -80,6 +80,12 @@ top20_gt <- Top20 %>%
               columns = c(Snaps, Snaps2)) %>% 
   tab_spanner(label = "EPA Contribution", 
               columns = c(Contribution, Contribution2)) %>% 
+  tab_style(
+    cell_borders(sides = "right"), 
+    locations = cells_body(
+      columns = c(Position, Snaps2)
+    )
+  ) %>% 
   tab_header(
     title = md("**Top 10 & Bottom 10 Player EPA Contribution**"),
     subtitle = "2018-2020 | Minimum of 25 punt returns in that time")
