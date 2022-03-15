@@ -13,5 +13,7 @@ RUN R -e "install.packages('htmltools')"
 RUN R -e "install.packages('reactablefmtr')"
 RUN R -e "install.packages('nflfastR')"
 RUN R -e "install.packages('nflplotR')"
-
+RUN R -e "install.packages('gt')"
+RUN R -e "install.packages('remotes')"
+RUN R -e "remotes::install_github('jthomasmock/gtExtras')"
 
