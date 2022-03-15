@@ -29,22 +29,54 @@ Top20 <- DF %>%
     Name == "Da'Ron Payne" ~ "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3925354.png&w=350&h=254",
     Name == "Tyron Johnson" ~ "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3894912.png",
     Name == "Kerry Hyder" ~ "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/17068.png&w=350&h=254",
-    Name == "Arik Armstead" ~ "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2971275.png&w=350&h=254",
+    Name == "Arik Armstead" ~ "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/2971275.png&w=350&h=254"
   )) %>% 
-  select(Name, headshot, Position, Snaps, Contribution) %>% 
-  mutate(Contribution = round(Contribution, digits = 4))
+  mutate(Team = case_when(
+    Name == "John Cominsky" ~ "https://logos-world.net/wp-content/uploads/2020/05/Atlanta-Falcons-logo.png",
+    Name == "Collin Johnson" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/New_York_Giants_logo.svg/1280px-New_York_Giants_logo.svg.png",
+    Name == "Jordan Miller" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/New_Orleans_Saints_logo.svg/630px-New_Orleans_Saints_logo.svg.png",
+    Name == "Jason McCourty" ~ "https://sportslogohistory.com/wp-content/uploads/2018/04/miami_dolphins_2018-pres.png",
+    Name == "Bruce Miller" ~ "https://logos-world.net/wp-content/uploads/2020/05/Jacksonville-Jaguars-logo.png",
+    Name == "J.T. Hassell" ~ "https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/New_York_Jets_logo.svg/640px-New_York_Jets_logo.svg.png",
+    Name == "Paul Worrilow" ~ "https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/New_York_Jets_logo.svg/640px-New_York_Jets_logo.svg.png",
+    Name == "Darius Slay" ~ "https://logos-world.net/wp-content/uploads/2020/05/Philadelphia-Eagles-Logo.png",
+    Name == "Ian Thomas" ~ "https://sportslogohistory.com/wp-content/uploads/2017/12/carolina_panthers_2012-pres.png",
+    Name == "Peyton Barber" ~ "https://static.www.nfl.com/t_q-best/league/api/clubs/logos/LV",
+    Name == "Wayne Gallman" ~ "https://images.thdstatic.com/productImages/43fcf2e8-c5e4-46ef-b122-259b33a18eb9/svn/purple-applied-icon-wall-decals-nfop1901-64_600.jpg",
+    Name == "Chase Allen" ~ "https://sportslogohistory.com/wp-content/uploads/2018/04/miami_dolphins_2018-pres.png",
+    Name == "Martrell Spaight" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Washington_Commanders_logo.svg/2560px-Washington_Commanders_logo.svg.png",
+    Name == "Van Jefferson" ~ "https://logos-world.net/wp-content/uploads/2020/05/Los-Angeles-Rams-logo.png",
+    Name == "Albert Wilson" ~ "https://sportslogohistory.com/wp-content/uploads/2018/04/miami_dolphins_2018-pres.png",
+    Name == "Ryan Kerrigan" ~ "https://logos-world.net/wp-content/uploads/2020/05/Philadelphia-Eagles-Logo.png",
+    Name == "Da'Ron Payne" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Washington_Commanders_logo.svg/2560px-Washington_Commanders_logo.svg.png",
+    Name == "Tyron Johnson" ~ "https://justblogbaby.com/files/2013/07/Raider-logo-4.png",
+    Name == "Kerry Hyder" ~ "https://sportslogohistory.com/wp-content/uploads/2017/12/seattle_seahawks_2002-2011.png",
+    Name == "Arik Armstead" ~ "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/San_Francisco_49ers_logo.svg/2560px-San_Francisco_49ers_logo.svg.png"
+  )) %>% 
+  mutate(Contribution = round(Contribution, digits = 4)) %>% 
+  mutate(Contribution2 = Contribution) %>% 
+  mutate(Snaps2 = Snaps) %>% 
+  select(Team, Name, headshot, Position, Snaps, Snaps2, Contribution, Contribution2)
 
 top20_gt <- Top20 %>% 
   gt() %>% 
   gt_img_rows(headshot) %>% 
-  gt_plt_bar(column = Snaps, scaled = TRUE, color = "darkgreen") %>%
-  gt_plt_bar(column = Contribution, scaled = TRUE, color = "darkblue", keep_column = T) %>%
+  gt_img_rows(Team) %>% 
+  gt_plt_bar(column = Snaps2, scaled = TRUE, color = "darkgreen") %>%
+  gt_plt_bar(column = Contribution2, scaled = TRUE, color = "darkblue") %>%
   gt_theme_538(table.width = px(650)) %>%
   cols_align(align = "center") %>%
-  cols_label(Name = "Player",
+  cols_label(Team = "", 
+             Name = "Player",
              headshot = "",
-             Snaps = "Snaps",
-             Contribution = "EPA Contribution") %>%
+             Snaps = "",
+             Snaps2 = "",
+             Contribution = "", 
+             Contribution2 = "") %>%
+  tab_spanner(label = "Snap Count", 
+              columns = c(Snaps, Snaps2)) %>% 
+  tab_spanner(label = "EPA Contribution", 
+              columns = c(Contribution, Contribution2)) %>% 
   tab_header(
     title = md("**Top 10 & Bottom 10 Player EPA Contribution**"),
     subtitle = "2018-2020 | Minimum of 25 punt returns in that time"
