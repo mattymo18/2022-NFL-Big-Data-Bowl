@@ -20,6 +20,9 @@ validate:\
 
 #builds final report	
 Analysis.pdf:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/clean.plays.csv\
+ Derived_Data/player.index.csv\
  Analysis.Rmd
 	R -e "rmarkdown::render('Analysis.Rmd')"
 	
