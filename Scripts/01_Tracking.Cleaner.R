@@ -214,7 +214,14 @@ print("Tracking Data Cleaning Complete")
 #turns out they already do this for us, that is nice
 
 punts3 <- punts2 %>% 
-  mutate(penalty.yards.clean = ifelse(is.na(penaltyCodes), 0, penaltyYards))
+  mutate(penalty.yards.clean = ifelse(is.na(penaltyCodes), 0, penaltyYards)) %>% 
+  #here we have decided a categorical approach to this response is better, it is not necessarily important how many 
+  #yard the penalty is, rather who the penalty is on is more important. 
+  mutate(penalty.yards.clean = case_when(
+    penalty.yards.clean < 0 ~ -1, 
+    penalty.yards.clean == 0 ~ 0, 
+    penalty.yards.clean > 0 ~ 1
+  ))
 
 
 

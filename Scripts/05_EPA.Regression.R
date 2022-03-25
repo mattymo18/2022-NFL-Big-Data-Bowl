@@ -37,16 +37,16 @@ names(Sparse.tib) <- as.character(unlist(col.names))
 
 Sparse.tib.named <- Sparse.tib %>% 
   mutate(newId = punts$newId) %>% 
-  mutate(Pen.Yrds = punts$penalty.yards.clean) %>% 
+  mutate(Penalty = punts$penalty.yards.clean) %>% 
   #here we use negative EPA since EPA is from the possession team perspective and I switched the variable of success 
   #to be from the return team perspective (-1 punters, 1 returners)
   mutate(EPA = -punts$epa) %>% 
-  select(newId, EPA, Pen.Yrds, everything())
+  select(newId, EPA, Penalty, everything())
 
 #in this script we are only doing the EPA regression, lets make our dataframe reflect that
 
 Regress.df <- Sparse.tib.named %>% 
-  select(-newId, -Pen.Yrds)
+  select(-newId, -Penalty)
 
 #we also will want to know snap counts for each player on each team, we can get that easily from the player index
 
@@ -61,7 +61,6 @@ player.snap.count <- player.index %>%
 
 #we'll use caret for all this so we can make sure it is all cross validated and we choose a good lambdas
 
-#first we want to partition the data in a nice way
 set.seed(18) #great number
 
 #no need to split into train and test, we are not predicting anything, rather we just want coeffecients
@@ -93,7 +92,7 @@ orderd.coefs.ridge <- tibble(
 
 #the NA is from the intercept, we don't want that...so in the next step we can just omit it
 
-#next we want to get everyone name, team, and position joined in
+#next we want to get everyones name, team, and position joined in
 
 teams.coefs.ridge <- left_join(na.omit(orderd.coefs.ridge), 
                                player.index %>% distinct(nflId, Name, Team, Position), 

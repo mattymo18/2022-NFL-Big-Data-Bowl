@@ -42,20 +42,19 @@ names(Sparse.tib) <- as.character(unlist(col.names))
 
 Sparse.tib.named <- Sparse.tib %>% 
   mutate(newId = punts$newId) %>% 
-  mutate(Pen.Yrds = punts$penalty.yards.clean) %>% 
+  mutate(Penalty = punts$penalty.yards.clean) %>% 
   #here we use negative EPA since EPA is from the possession team perspective and I switched the variable of success 
   #to be from the return team perspective (-1 punters, 1 returners)
   mutate(EPA = -punts$epa) %>% 
-  select(newId, EPA, Pen.Yrds, everything())
+  select(newId, EPA, Penalty, everything())
 
 #ok, lets start making some plots just to see what we have
 
 #start with histograms of responses, 3/8/2022 lets fix this rather than comment it out
 
 #we can make all of those at once easily in ggplot
-graph1 <- Sparse.tib.named %>% 
-  rename("Penalty Yards" = Pen.Yrds) %>% 
-  pivot_longer(cols = c(`Penalty Yards`, EPA), 
+graph1 <- Sparse.tib.named %>%
+  pivot_longer(cols = c(Penalty, EPA), 
                names_to = "Variable", values_to = "Value") %>% 
   select(Variable, Value) %>% 
   ggplot(aes(x = Value)) +
@@ -86,9 +85,8 @@ ggsave("EDA_Plots/01_Response_Histograms.png", plot = graph1)
 # ggsave("EDA_Plots/02_Sparse_Mat_Vis.png", plot = graph2)
 
 #lets do boxplots of the responses now
-graph2 <- Sparse.tib.named %>% 
-  rename("Penalty Yards" = Pen.Yrds) %>% 
-  pivot_longer(cols = c(`Penalty Yards`, EPA), 
+graph2 <- Sparse.tib.named %>%
+  pivot_longer(cols = c(Penalty, EPA), 
                names_to = "Variable", values_to = "Value") %>% 
   select(Variable, Value) %>% 
   ggplot(aes(x = Variable, y = Value)) +
@@ -211,7 +209,7 @@ player.avg.func.EPA <- function(x) {
 }
 
 player.avg.func.PY <- function(x) {
-  avg = abs(x)%*%Sparse.tib.named$Pen.Yrds/sum(abs(x))
+  avg = abs(x)%*%Sparse.tib.named$Penalty/sum(abs(x))
 }
 
 #now we can do a similar excercise as above to make the tables for each player with their names
@@ -234,16 +232,16 @@ response.per.player.avg.named <- left_join(response.per.player.avg,
 #now we want to compare these to the population means and visualize it
 
 popmeans <- tibble(
-  Variable = c("EPA", "Penalty Yards"), 
-  Value = c(mean(Sparse.tib.named$EPA), mean(Sparse.tib.named$Pen.Yrds))
+  Variable = c("EPA", "Penalty"), 
+  Value = c(mean(Sparse.tib.named$EPA), mean(Sparse.tib.named$Penalty))
 )
 
 graph3 <- response.per.player.avg.named %>% 
   #rename for convenience
-  rename("Penalty Yards" = PY.AVG, 
+  rename("Penalty" = PY.AVG, 
          "EPA" = EPA.AVG) %>% 
   #pivot so we can plot nicely
-  pivot_longer(cols = c(EPA, `Penalty Yards`), 
+  pivot_longer(cols = c(EPA, Penalty), 
                names_to = "Variable", values_to = "Value") %>% 
   select(Variable, Value) %>% 
   ggplot(aes(x = Value, y = Variable, color = Variable)) +
@@ -252,7 +250,7 @@ graph3 <- response.per.player.avg.named %>%
   #now we can add in segments for the population averages
   geom_segment(aes(x = mean(Sparse.tib.named$EPA), xend = mean(Sparse.tib.named$EPA), 
                    y = 0.6, yend = 1.4, ), color = "black") +
-  geom_segment(aes(x = mean(Sparse.tib.named$Pen.Yrds), xend = mean(Sparse.tib.named$Pen.Yrds), 
+  geom_segment(aes(x = mean(Sparse.tib.named$Penalty), xend = mean(Sparse.tib.named$Penalty), 
                    y = 1.6, yend = 2.4, ), color = "black") +
   #now we want to label a few of the players, but only the ones significantly different than the population avg
   #lets do 2 standard deviations, we can use ggrepel so there are no overlaps
@@ -265,9 +263,9 @@ graph3 <- response.per.player.avg.named %>%
                   color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
   geom_text_repel(data = response.per.player.avg.named %>%
                     rename("Value" = PY.AVG) %>%
-                    mutate(Variable = "Penalty Yards") %>% 
-                    filter(Value < mean(Sparse.tib.named$Pen.Yrds) - 2*sd(Sparse.tib.named$Pen.Yrds) | 
-                             Value > mean(Sparse.tib.named$Pen.Yrds) + 2*sd(Sparse.tib.named$Pen.Yrds)), 
+                    mutate(Variable = "Penalty") %>% 
+                    filter(Value < mean(Sparse.tib.named$Penalty) - 2*sd(Sparse.tib.named$Penalty) | 
+                             Value > mean(Sparse.tib.named$Penalty) + 2*sd(Sparse.tib.named$Penalty)), 
                   aes(x = Value, label = Name), 
                   color = "black", size = 2.5, segment.color = "gray", max.overlaps = 15) +
   theme(plot.caption.position = "left") +
@@ -275,7 +273,7 @@ graph3 <- response.per.player.avg.named %>%
   theme_bw() +
   labs(title = "Player Averages vs. Population Average", 
        caption = "*Black lines signify population means per variable") +
-  theme(plot.caption = element_text(color = "red", face = "italic", hjust = 1.5))
+  theme(plot.caption = element_text(color = "red", face = "italic", hjust = 1.3))
 
 ggsave("EDA_Plots/04_Player_Avg_Pop_Avg.png", plot = graph3)
 
