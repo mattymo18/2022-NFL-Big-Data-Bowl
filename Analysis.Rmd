@@ -65,13 +65,13 @@ Sparse.tib.named <- Sparse.tib %>%
 2. Introduction
 ---------------
 
-This paper introduces two new metrics for evaluating player performance during punting situations in the NFL: Regularized Adjusted Expected Points Added Contribution (RAEPAC) and Regularized Adjusted Penalty Yard Contribution (RAPYC). To build these new metrics, I adapt a statistic historically used in the NBA called Adjusted Plus-Minus (APM). This metric adjusts the conventional Plus-Minus metric to control for every player on the court during a stint where the same 10 players are on the court. In the NFL punt return case, this is simply the 22 players on the field during a punt. In classic APM for basketball, the variable of interest is the points scored during the stint, however this will not work for football since points are rarely scored during punts. In RAEPAC, I use Expected Points Added (EPA) as the variable of interest while in RAPYC I use penalty yards. EPA calculation is further explained in the Methodology section. Specifically, to calculate RAEPAC I use Ridge regression to to get regression coefficients for each player that was on the field during a punt. To calculate RAPYC, I use a Zero-Inflate Poisson regression to get coefficients for each player. These regression coefficients are what define these two new metrics. The model choices will be discussed further in the Methodology section. These metrics can be used to rank players regardless of their position on how much they positively contribute towards the success of their team on punting situations. These types of metrics could be extremely useful for on-field decision makers when deciding who should be on the field during crucial punting plays. Also, these metrics can be aggregated on a team level to rank how successful teams are during punts. Assessing players regardless of their position could change the way coaches think about their personnel and shed light on players that may not get enough credit for their contribution.
+This paper introduces two new metrics for evaluating player performance during punting situations in the NFL: Regularized Adjusted Expected Points Added Contribution (RAEPAC) and Regularized Adjusted Penalty Contribution (RAPC). To build these new metrics, I adapt a statistic historically used in the NBA called Adjusted Plus-Minus (APM). This metric adjusts the conventional Plus-Minus metric to control for every player on the court during a stint where the same 10 players are on the court. In the NFL punt return case, this is simply the 22 players on the field during a punt. In classic APM for basketball, the variable of interest is the points scored during the stint, however this will not work for football since points are rarely scored during punts. In RAEPAC, I use Expected Points Added (EPA) as the variable of interest, while in RAPC I use a penalty indicator coded as a `-1` if the punt team commits the penalty, a `1` if the return team commits the penalty, and a `0` if there is no penalty. EPA calculation is further explained in the Methodology section. Specifically, to calculate RAEPAC I use Ridge regression to to get regression coefficients for each player that was on the field during a punt. To calculate RAPC, I use a Regularized Ordinal Logistic Regression to get coefficients for each player. The regression coefficients for the respective models are what define these two new metrics. The model choices will be discussed further in the Methodology section. These metrics can be used to rank players regardless of their position on how much they positively contribute towards the success of their team on punting situations. This type of evaluation method could be extremely useful for on-field decision makers when deciding who should be on the field during crucial punting plays. Also, these metrics can be aggregated on a team level to rank how successful teams are during punts. Assessing players regardless of their position could change the way coaches think about their personnel and shed light on players that may not get enough credit for their contribution.
 
 **2.1 Data**
 
-The final dataframe used for analysis has 5890 plays with 2005 unique players. Each row of is a play from 2018-2020 where the team lined up to punt the ball away and each column is a player that could have been on the field. Each cell of the dataframe represents if the player was on the field during that play or not. A player on the punting team is given a -1 and each player on the receiving team is given a 1. Players that were not on the field during that play are coded as a 0. This follows the methodology first employed by Dan Rosenbaum for computing APM is basketball. 
+The final dataframe used for analysis has 5890 plays with 2005 unique players and two response variables: EPA and the penalty indicator. Each row of is a play from 2018-2020 where the team lined up to punt the ball away and each column is a player that could have been on the field. Each cell of the dataframe represents if the player was on the field during that play or not. A player on the punting team is given a `-1` and each player on the receiving team is given a `1`. Players that were not on the field during that play are coded as a `0`. This follows the methodology first employed by Dan Rosenbaum for computing APM is basketball (Rosenbaum). 
 
-This dataframe is inherently rank deficient and therefore I cannot use standard linear regression, rather I use a penalized approach so the sample covariance matrix was invertible. The dataframe is rank deficient because if I remove a players column, I still know whether he was on the field on offense or defense by simply using the rest of the columns. According to this, the matrix does not have full rank. Below is a glimpse of the dataframe.
+This dataframe is inherently rank deficient and therefore I cannot use standard linear regression, rather I use a penalized approach so the sample covariance matrix is invertible. The dataframe is rank deficient because if I remove a players column, I still know whether he was on the field on offense or defense by simply using the rest of the columns. According to this, the matrix does not have full rank. In other words, the rank of the matrix will always be at most N-1 given there are N players represented. Below is a glimpse of the dataframe.
 
 ```{r, echo = F}
 head(Sparse.tib.named %>% 
@@ -84,11 +84,11 @@ head(Sparse.tib.named %>%
 3. Methodology
 --------------
 
-In this section I discuss the EPA variable calculation, Exploratory Data Analysis (EDA), and model selection process. I use a similar methodology as explained in Dan Rosenbaums's 2004 paper titled "Measuring How NBA Players Help Their Teams Win". 
+In this section I discuss the EPA variable calculation, Exploratory Data Analysis (EDA), and model selection process. I use a similar methodology as explained in Dan Rosenbaum's 2004 paper, titled "Measuring How NBA Players Help Their Teams Win", where he describes the creation of the APM model (Rosenbaum). 
 
 **3.1 EPA Calculation**
 
-EPA is calculated by taking the difference between the expected points before and after the play occurs. Using historical data, the amount of points a team is expected to score on the current drive depending on the down, distance to the first down, and field position can be calculated. Expected points is based off the notion that not all yards gained are the same. For example, a 2-yard gain on 4th down and 3 does not increase a teams chance of scoring, while a 2-yard gain on 4th and 1 does because the offense will remain on the field. Expected points quantifies this difference by relating each play to how much it changes the chances of scoring on that drive. Figure 1 shows how expected points changes as a team drives down the field towards the opponents end zone. 
+EPA is calculated by taking the difference between the expected points before and after the play occurs. Using historical data, the amount of points a team is expected to score on the current drive depending on the down, distance to the first down, and field position can be calculated. Expected points is based off the notion that not all yards gained are the same. For example, a 2-yard gain on 4th down and 3 does not increase a teams chance of scoring, while a 2-yard gain on 4th and 1 does because the offense will remain on the field. Expected points quantifies this difference by relating each play to how much it changes the chances of scoring on that drive. Figure 1 shows how expected points changes as a team drives down the field towards the opponents end zone (Greer). 
 
 ```{r, echo = F, out.height = "35%", fig.cap = "This plot shows how expected points changes depending on the down and distance to the end zone. As shown, it is far better to be closer to the end zone on early downs.", fig.pos = "H", fig.show='hold', fig.align='center'}
 knitr::include_graphics("Images/EPA_Plot.png")
@@ -98,32 +98,61 @@ As can be seen, expected points increases as the team moves closer and closer to
 
 **3.2 Exploratory Data Analysis**
 
-I complete a preliminary EDA to validate and visualize the data before the modeling procedures. Completing and EDA prior to modeling is a crucial step that ensures the data are correct and the model choices are valid. I begin by making certain the final dataframe is correct. To complete this I first check that each row sums to 0 to show there are the same amount of offensive and defensive players on the field. I then check to see that there are always 22 players on the field. Finally, I choose 500 random plays and check to make sure the correct players are on the field. After validating the final dataframe I move on the visualization. 
+I complete a preliminary EDA to validate and visualize the data before the modeling procedures. Completing and EDA prior to modeling is a crucial step that ensures the data are correct and the model choices are valid. I begin by making certain the final dataframe is correct. To complete this I first check that each row sums to zero to show there are the same amount of offensive and defensive players on the field. I then check to see that there are always 22 players on the field. Finally, I choose 500 random plays and check to make sure the correct players are on the field.
 
-I begin by visualizing the response variables: EPA and penalty yards. This step helps me to decide what kind of models are appropriate for these responses. Below I plot the histograms of the two variables. 
+Next, I visualize the response variables: EPA and penalties. This step helps to decide what kind of models are appropriate for these responses. Below I plot the histograms of the two variables. 
 
-```{r, echo = F, out.height = "45%", fig.cap = "This plot shows the distribution of the two response variables. It seems the EPA response is approximately normal around 0. On the other hand the penalty yards response has a large amount of 0s.", fig.pos = "H", fig.show='hold', fig.align='center'}
+```{r, echo = F, out.height = "45%", fig.cap = "This plot shows the distribution of the two response variables. It seems the EPA response is approximately normal around zero. On the other hand there are a lot of plays with no penalties.", fig.pos = "H", fig.show='hold', fig.align='center'}
 knitr::include_graphics("EDA_Plots/01_Response_Histograms.png")
 ```
 
-As seen in Figure 2, there seems to be an inflated amount of 0s in both distributions. Penalty yards is a discrete variable and there are many plays that do not have any penalties and thus have a value of 0. On the other hand, EPA is a continuous variable and many of the values are close to 0, indicating that the punt leads to neither team gaining an advantage. Punts that result in a fumble and the punting team recovering the ball result in a very negative EPA meaning the punting team was extremely successful and is now likely to score. Similarly, punts that result in a huge return have a high EPA close to 7 that shows the return team was successful. In Figure 3, I show box-plots of the response variables to reinforce these findings. 
+As seen in Figure 2, there seems to be an inflated amount of zeros in both distributions. Penalties is a categorical variable and there are many plays that do not have any penalties and thus have a value of zero. On the other hand, EPA is a continuous variable and many of the values are close to zero, indicating that the punt leads to neither team gaining an advantage. Punts that result in a fumble and the punting team recovering the ball result in a very negative EPA meaning the punting team was extremely successful and is now likely to score. Similarly, punts that result in a huge return have a high EPA close to 7 that shows the return team was successful. In Figure 3, I show box-plots of the response variables to reinforce these findings. 
 
-```{r, echo = F, out.height = "50%", fig.cap = "These box-plots help reinfroce what is seen in Figure 2. The mean for both response variables is right around 0 and EPA seems approximately normal.", fig.pos = "H", fig.show='hold', fig.align='center'}
+```{r, echo = F, out.height = "50%", fig.cap = "These box-plots help reinfroce what is seen in Figure 2. The mean for both response variables is right around zero and EPA seems approximately normal.", fig.pos = "H", fig.show='hold', fig.align='center'}
 knitr::include_graphics("EDA_Plots/02_Response_Boxplots.png")
 ```
+
+Figure 3 strengthens the observation that EPA is approximately normally distributed around zero and has small tails at 7 and -7. Penalties only takes three categorical values that correspond to the type of penalty committed. A vast majority of plays do not have a penalty and thus have a zero value for this response.
+
+The last visualization I make for the EDA shows an rudimentary look at the impact players have while they are on the field. Figure 4 shows the average EPA and penalty yards for each player when they are on the field against the population average for both response variables. This plot helps to explain the intuition behind this analysis, I suspect that players with higher averages also may contribute more. 
+
+```{r, echo = F, out.height = "60%", fig.cap = "This plot shows how individual players averages are different than the population average for both response variables. Labled players are 2 standard deviations away from the population mean.", fig.pos = "H", fig.show='hold', fig.align='center'}
+knitr::include_graphics("EDA_Plots/04_Player_Avg_Pop_Avg.png")
+```
+
+In Figure 4, I find players that have skewed averages because they were on the field for very few plays. Adolphus Washington only played one snap on the return team that happened to be a major return, thus resulting in a high EPA. Similarly, Da'Norris Searcy and Kendal Vickers each played a single snap that happened to have a penalty. Because of this, these players with low snap counts will not be considered during the contribution analysis as they have not played enough snaps to truly assess their contribution. During the modeling procedures I set the minimum snap count to 25 meaning a player will need approximately three games on the punt or return team for their contribution to be considered noteworthy. 
+
+**3.3 Model Selection**
+
+The model selection process follows directly from the results for the EDA. I attempt to use models that are appropriate for the distribution and real world interpretation of the two response variables. In each case, the regression coefficient for each player will represent their individual contribution controlling for all other plays on the field during that play. 
+
+*EPA Model:* As discussed in the Data section, the player interaction matrix is rank deficient and thus I must use a penalized approach to the regression. Adding the penalty term ensures the player interaction matrix is invertible. EPA is approximately normal around zero and continuous, so it is reasonable to use Ridge regression to account for the rank deficiency and still find reasonable coefficients for each player to represent their contribution. I decide to use Ridge here rather than LASSO because I do not want any player to end up with zero as their contribution. If I had used LASSO, many of the player's regression coefficient would likely be shrunk to zero and I would not be able to rank them. This penalized approach also controls for any multicollinearity that may in the player matrix. Many players, such as punters and long snappers, are likely always on the field for the same plays which may introduce multicollinearity that would inflate coefficient values. I use 10-fold cross validation to find the optimal penalty parameter. The best model from these cross validation procedures is used to find the EPA contribution for each player. 
+
+*Penalty Model:* This response is a three factor ordinal categorical variable. Like in the EPA model formulation, I need to use a penalized approach since the player interaction matrix is rank deficient. Thus, I decide to use a Regularized Ordinal Logistic Regression. This regression technique works as a classification model when the response has three or more categories where the order matters and adds a  penalty parameter to ensure the player interaction matrix is invertible. In this model I use an LASSO penalty because I do not need to rank those players that do not significantly contribute towards penalties. In the EPA model I assessed how each player contributes to EPA since every play has a measured EPA, but in this case I only care about those players that actually contribute to the penalties. With an Elastic-Net penalty, players on the field during plays that did not have a penalty will have a contribution of 0. I use 10-fold cross validation here to find the optimal penalty parameter. The model with the highest out of sample classification accuracy is used to find each player's penalty contribution. 
 
 4. Results
 ----------
 
+**4.1 Team Level Analysis**
+
+**4.2 Player Level Analysis**
+
 5. Conclusion & Future Research
 -------------------------------
 
-6. Appendix
------------
+**5.1 Conclusion**
 
-7. References
+**5.2 Future Research**
+
+6. References
 -------------
 
-Dan Rosenbaum's Paper: http://www.82games.com/comm30.htm
+1. Greer, R. (2021, October 23). What are expected points added (EPA) in the NFL. nflelo. Retrieved March 21, 2022, from https://www.nfeloapp.com/analysis/expected-points-added-epa-nfl 
 
-Figure 1: https://www.nfeloapp.com/analysis/expected-points-added-epa-nfl
+2. Rosenbaum, D. (2004, April 30). Measuring How NBA Players Help Their Teams Win. Picking the difference makers for the All-NBA Teams. Retrieved March 21, 2022, from http://www.82games.com/comm30.htm 
+
+
+7. Appendix
+-----------
+
+A full appendix can be found on github here: https://github.com/mattymo18/2022-NFL-Big-Data-Bowl
