@@ -172,7 +172,7 @@ top20_Penalty_gt <- DF_Penalty_20 %>%
               columns = c(Team, Name, headshot, Position)) %>% 
   tab_spanner(label = "Snap Count", 
               columns = c(Snaps, Snaps2)) %>% 
-  tab_spanner(label = "EPA Contribution", 
+  tab_spanner(label = "Penalty Contribution", 
               columns = c(Contribution, Contribution2)) %>% 
   tab_style(
     cell_borders(sides = "right"), 
