@@ -83,9 +83,28 @@ Regression_Plots/Team_EPA_Contribution.png:\
  Scripts/05_EPA.Regression.R
 	Rscript Scripts/05_EPA.Regression.R
 	
+######################### Peanlty Model
+	
+Derived_Data/ordinal.regression.coefs.csv:\
+ Derived_Data/Sparse.Matrix.txt\
+ Derived_Data/clean.plays.csv\
+ Derived_Data/player.index.csv\
+ Scripts/06_Penalty.Regression.R
+	Rscript Scripts/06_Penalty.Regression.R
+
+#plots
+
+Derived_Data/Top.20.Players.Penalty.csv\
+Regression_Plots/Team_Penalty_Contribution.png:\
+ Derived_Data/ordinal.regression.coefs.csv\
+ Derived_Data/player.index.csv\
+ Scripts/08_Penalty.Regression.Plotter.R
+	Rscript Scripts/08_Penalty.Regression.Plotter.R
+	
 ######################### GT Table
 
-Regression_Plots/top20_gt.png:\
+Regression_Plots/top20_Penalty_gt.png\
+Regression_Plots/top20_EPA_gt.png:\
  Derived_Data/Top.10.Players.csv\
  Scripts/07_GT.Table.R
 	Rscript Scripts/07_GT.Table.R
