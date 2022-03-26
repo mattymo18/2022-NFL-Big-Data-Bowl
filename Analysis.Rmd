@@ -128,14 +128,35 @@ The model selection process follows directly from the results for the EDA. I att
 
 *EPA Model:* As discussed in the Data section, the player interaction matrix is rank deficient and thus I must use a penalized approach to the regression. Adding the penalty term ensures the player interaction matrix is invertible. EPA is approximately normal around zero and continuous, so it is reasonable to use Ridge regression to account for the rank deficiency and still find reasonable coefficients for each player to represent their contribution. I decide to use Ridge here rather than LASSO because I do not want any player to end up with zero as their contribution. If I had used LASSO, many of the player's regression coefficient would likely be shrunk to zero and I would not be able to rank them. This penalized approach also controls for any multicollinearity that may in the player matrix. Many players, such as punters and long snappers, are likely always on the field for the same plays which may introduce multicollinearity that would inflate coefficient values. I use 10-fold cross validation to find the optimal penalty parameter. The best model from these cross validation procedures is used to find the EPA contribution for each player. 
 
-*Penalty Model:* This response is a three factor ordinal categorical variable. Like in the EPA model formulation, I need to use a penalized approach since the player interaction matrix is rank deficient. Thus, I decide to use a Regularized Ordinal Logistic Regression. This regression technique works as a classification model when the response has three or more categories where the order matters and adds a  penalty parameter to ensure the player interaction matrix is invertible. In this model I use an LASSO penalty because I do not need to rank those players that do not significantly contribute towards penalties. In the EPA model I assessed how each player contributes to EPA since every play has a measured EPA, but in this case I only care about those players that actually contribute to the penalties. With an Elastic-Net penalty, players on the field during plays that did not have a penalty will have a contribution of 0. I use 10-fold cross validation here to find the optimal penalty parameter. The model with the highest out of sample classification accuracy is used to find each player's penalty contribution. 
+*Penalty Model:* This response is a three factor ordinal categorical variable. Like in the EPA model formulation, I need to use a penalized approach since the player interaction matrix is rank deficient. Thus, I decide to use a Regularized Ordinal Logistic Regression. This regression technique works as a classification model when the response has three or more categories where the order matters and adds a  penalty parameter to ensure the player interaction matrix is invertible. In this model I use an LASSO penalty because I do not need to rank those players that do not significantly contribute towards penalties. In the EPA model I assessed how each player contributes to EPA since every play has a measured EPA, but in this case I only care about those players that actually contribute to the penalties. With a LASSO penalty, players on the field during plays that did not have a penalty will have a contribution of 0. I use 10-fold cross validation here to find the optimal penalty parameter. The model with the highest out of sample classification accuracy is used to find each player's penalty contribution. 
 
-4. Results
-----------
+4. Results & Discussion
+-----------------------
 
-**4.1 Team Level Analysis**
+In this section I discuss the results from the two regression analyses. I present the result for the player level as well as the aggregated team level to assess both individual player and team effectiveness during punt plays. 
 
-**4.2 Player Level Analysis**
+**4.1 Player Level Analysis**
+
+First, I'll discuss results on the individual player level for both RAEPAC and RAPC. Here I assess how each player contributed towards EPA and penalties controlling for all other players that were on the field with them during a stint. Figure 5 shows the top 10 and bottom 10 players for the RAEPAC metric. 
+
+```{r, echo = F, out.height = "60%", fig.cap = "This figure shows the top 10 and bottom 10 players with regard to EPA contribution. The bottom 10 players are those with negative contribution with Arik Armstead being the worst.", fig.pos = "H", fig.show='hold', fig.align='center'}
+knitr::include_graphics("Regression_Plots/top20_EPA_gt.png")
+```
+
+The top 10 players contribute positively towards EPA meaning they contribute efficiently and help their team be successful. On the other hand, players in the bottom 10 contribute negatively meaning their opponent is more successful during the punt return. Players in the bottom 10 effectively detract from their team's success. Because of the regularization technique, these contribution metrics cannot be interpreted in the same way as in ordinary least squares regression coefficients. Instead, they must be interpreted as the amount of differential contribution with respect to the penalty parameter. In other words, the contribution is an approximation scaled by the penalty parameter. 
+
+It is interesting to see that no position is specifically better than any other. Usually, the ball carrier gets most of the credit during a punt return, but this metric does not discriminate against position and attempts to highlight those players that normally get little to no credit during returns. Also, snap count does not seem to have a major impact on contribution. Players that are on the field more (or less) do not seem to have better (or worse) contribution. 
+
+Figure 6 shows a similar plot for the RAPC metric. In this case, I only plot the top 20 players because decision makers will want to know the players that contribute most towards penalties. For this metric, positive contribution means the player contributes towards penalties that hurt their own team. In other words, positive contribution is bad unlike in RAEPAC where positive contribution means they contribute towards success. 
+
+```{r, echo = F, out.height = "60%", fig.cap = "This figure shows the top 20 players in penalty contribution. These players detract from team success as positive contribution means the penalties hurt their team.", fig.pos = "H", fig.show='hold', fig.align='center'}
+knitr::include_graphics("Regression_Plots/top20_Penalty_gt.png")
+```
+
+Like in EPA contribution, Figure 6 shows that player position does not seem to be a contributing factor. This makes perfect sense as any position can cause penalties. Though, it is interesting to see that there are a few punters here. I assume these players are not the ones causing the penalties as punters rarely are penalized. Rather, they are simply on the field when penalties happen. Similarly, there are a few players (James Proche & Ray-Ray McCloud) that are the return men for their respective teams. It is usually unlikely that the ball carrier will be penalized so they are likely just on the field when their team is getting penalized, thus the penalty contribution is attributed to them. This discovery points to a flaw in the player level penalty analysis. Players that are likely not getting penalized are being shown as high penalty contributors because they are on the field the most during stints when penalties occur. Rather than attributing these penalties to specific players, I'll move on the aggregate on a team level to assess which teams have high penalty contribution. Players in Figure 6 may not truly be contributing to penalties, rather this plot points to teams that may have high penalty contribution. 
+
+**4.2 Team Level Analysis**
+
 
 5. Conclusion & Future Research
 -------------------------------
