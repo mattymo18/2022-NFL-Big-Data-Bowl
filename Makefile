@@ -23,6 +23,13 @@ Analysis.pdf:\
  Derived_Data/Sparse.Matrix.txt\
  Derived_Data/clean.plays.csv\
  Derived_Data/player.index.csv\
+ EDA_Plots/01_Response_Histograms.png\
+ EDA_Plots/02_Response_Boxplots.png\
+ EDA_Plots/04_Player_Avg_Pop_Avg.png\
+ Regression_Plots/top20_EPA_gt.png\
+ Regression_Plots/top20_Penalty_gt.png\
+ Regression_Plots/Team_EPA_Contribution.png\
+ Regression_Plots/Team_Penalty_Contribution.png\
  Analysis.Rmd
 	R -e "rmarkdown::render('Analysis.Rmd')"
 	
