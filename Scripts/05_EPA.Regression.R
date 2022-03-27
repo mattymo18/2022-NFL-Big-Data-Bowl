@@ -172,7 +172,7 @@ graph1 <- teams.final2 %>%
   geom_col(aes(color = Team, fill = Team), width = 0.5) +
   nflplotR::scale_color_nfl(type = "secondary") +
   nflplotR::scale_fill_nfl() +
-  labs(title = "Player Average EPA Contribution by Team") +
+  labs(title = "Average EPA Contribution by Team") +
   theme_bw() +
   theme(axis.text.x = element_nfl_logo(), 
         axis.title.x = element_blank())
