@@ -78,12 +78,18 @@ top20_EPA_gt <- Top20_EPA %>%
               columns = c(Team, Name, headshot, Position)) %>% 
   tab_spanner(label = "Snap Count", 
               columns = c(Snaps, Snaps2)) %>% 
-  tab_spanner(label = "EPA Contribution", 
+  tab_spanner(label = "RAEPAC", 
               columns = c(Contribution, Contribution2)) %>% 
   tab_style(
     cell_borders(sides = "right"), 
     locations = cells_body(
       columns = c(Position, Snaps2)
+    )
+  ) %>% 
+  tab_style(
+    cell_borders(sides = "bottom"), 
+    locations = cells_body(
+      rows = 10
     )
   ) %>% 
   tab_header(
@@ -172,7 +178,7 @@ top20_Penalty_gt <- DF_Penalty_20 %>%
               columns = c(Team, Name, headshot, Position)) %>% 
   tab_spanner(label = "Snap Count", 
               columns = c(Snaps, Snaps2)) %>% 
-  tab_spanner(label = "Penalty Contribution", 
+  tab_spanner(label = "RAPC", 
               columns = c(Contribution, Contribution2)) %>% 
   tab_style(
     cell_borders(sides = "right"), 
